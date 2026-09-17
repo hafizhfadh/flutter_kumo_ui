@@ -1,7 +1,9 @@
 name: kumo_ui
-description: "A new Flutter package project."
-version: 0.0.1
-homepage:
+description: A mobile-first Flutter implementation of Cloudflare's Kumo UI design system, built using pure widgets.dart.
+version: 0.1.0-beta.1
+homepage: https://github.com/hafizhfadh/kumo_ui
+repository: https://github.com/hafizhfadh/kumo_ui
+issue_tracker: https://github.com/hafizhfadh/kumo_ui/issues
 
 environment:
   sdk: ^3.13.1
@@ -10,6 +12,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  phosphor_icons: ^3.0.1
 
 dev_dependencies:
   flutter_test:
