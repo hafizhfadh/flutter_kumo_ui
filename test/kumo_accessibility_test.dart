@@ -76,6 +76,7 @@ void main() {
       'textSecondary': colors.textSecondary,
       'textMuted': colors.textMuted,
       'primary': colors.primary,
+      'info': colors.info,
       'success': colors.success,
       'warning': colors.warning,
       'dangerText': colors.dangerText,

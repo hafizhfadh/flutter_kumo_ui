@@ -49,7 +49,11 @@ class _KumoExampleHomeState extends State<KumoExampleHome> {
   final TextEditingController _token = TextEditingController();
 
   String _segment = 'overview';
+  String _plan = 'free';
   bool _notificationsEnabled = true;
+  bool _cachingEnabled = true;
+  int _tabIndex = 0;
+  int _page = 2;
 
   @override
   void dispose() {
@@ -61,8 +65,21 @@ class _KumoExampleHomeState extends State<KumoExampleHome> {
     _token.clear();
     setState(() {
       _segment = 'overview';
+      _plan = 'free';
       _notificationsEnabled = false;
+      _cachingEnabled = false;
+      _tabIndex = 0;
+      _page = 2;
     });
+  }
+
+  void _showToast() {
+    KumoToastManager.show(
+      context,
+      title: 'Worker deployed',
+      message: 'kumo-worker is live on 3 routes.',
+      kind: KumoToastKind.success,
+    );
   }
 
   void _openDialog() {
@@ -288,6 +305,90 @@ class _KumoExampleHomeState extends State<KumoExampleHome> {
                     Expanded(child: cachingRules),
                   ],
                 ),
+              ),
+              const SizedBox(height: 28),
+              const _SectionLabel('Breadcrumb'),
+              KumoBreadcrumb(
+                items: <KumoBreadcrumbItem>[
+                  KumoBreadcrumbItem(
+                    label: 'Accounts',
+                    onTap: () => setState(() => _tabIndex = 0),
+                  ),
+                  KumoBreadcrumbItem(
+                    label: 'example.com',
+                    onTap: () => setState(() => _tabIndex = 1),
+                  ),
+                  const KumoBreadcrumbItem(label: 'DNS'),
+                ],
+              ),
+              const SizedBox(height: 28),
+              const _SectionLabel('Tabs'),
+              KumoTabs(
+                tabs: const <String>['General', 'Traffic', 'Security'],
+                selectedIndex: _tabIndex,
+                onTabChanged: (int index) => setState(() => _tabIndex = index),
+              ),
+              const SizedBox(height: 12),
+              Text(
+                'Tab index $_tabIndex is selected.',
+                style: KumoTypography.caption,
+              ),
+              const SizedBox(height: 28),
+              const _SectionLabel('Badges'),
+              const Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: <Widget>[
+                  KumoBadge(label: 'Pro plan', variant: KumoBadgeVariant.info),
+                  KumoBadge(
+                    label: 'Active',
+                    variant: KumoBadgeVariant.success,
+                    icon: PhosphorIconsRegular.checkCircle,
+                  ),
+                  KumoBadge(
+                    label: 'Proxied',
+                    variant: KumoBadgeVariant.warning,
+                  ),
+                  KumoBadge(
+                    label: 'Errored',
+                    variant: KumoBadgeVariant.error,
+                    icon: PhosphorIconsRegular.warningCircle,
+                  ),
+                  KumoBadge(label: 'Draft'),
+                ],
+              ),
+              const SizedBox(height: 28),
+              const _SectionLabel('Checkbox and select'),
+              KumoCheckbox(
+                value: _cachingEnabled,
+                label: 'Enable caching',
+                onChanged: (bool value) =>
+                    setState(() => _cachingEnabled = value),
+              ),
+              const SizedBox(height: 12),
+              KumoSelect<String>(
+                value: _plan,
+                label: 'Plan',
+                options: const <String, String>{
+                  'free': 'Free',
+                  'pro': 'Pro',
+                  'business': 'Business',
+                },
+                onChanged: (String value) => setState(() => _plan = value),
+              ),
+              const SizedBox(height: 28),
+              const _SectionLabel('Pagination'),
+              KumoPagination(
+                currentPage: _page,
+                totalPages: 5,
+                onPageChanged: (int page) => setState(() => _page = page),
+              ),
+              const SizedBox(height: 28),
+              const _SectionLabel('Toast'),
+              KumoButton(
+                label: 'Show success toast',
+                icon: PhosphorIconsRegular.checkCircle,
+                onPressed: _showToast,
               ),
               const SizedBox(height: 28),
               const _SectionLabel('Code block'),

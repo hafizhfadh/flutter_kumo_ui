@@ -251,10 +251,22 @@ correctly inside a sidebar or split pane.
 - `KumoInput` — single-line text field with label, placeholder, prefix/suffix
   icons, obscured entry and inline error state.
 - `KumoSwitch` — compact on/off toggle with a 150ms eased thumb slide.
+- `KumoCheckbox` — labelled 18px checkbox that flips to the brand fill when
+  checked, with the whole row as one 48px tap target.
+- `KumoSelect<T>` — single-choice field that opens a popover on desktop and a
+  `KumoBottomSheet` action sheet on phones.
 - `KumoSegmentedControl<T>` — horizontal segmented selector for switching
   between sibling views.
 - `KumoButton` — brand-filled or outlined action with a 48px touch target and
   optional Phosphor icon.
+
+**Navigation**
+
+- `KumoBreadcrumb` — scrollable parent-route trail with caret separators and a
+  non-interactive current page.
+- `KumoTabs` — tab bar with a 2px brand indicator under the active tab.
+- `KumoPagination` — Prev/Next switcher with a monospace `Page X of Y`
+  indicator.
 
 **Structure and layout**
 
@@ -269,6 +281,8 @@ correctly inside a sidebar or split pane.
 - `KumoResponsiveLayout` — swaps any two arrangements at a configurable
   breakpoint based on the local constraints.
 - `KumoAccordion` — collapsible section using a `SizeTransition` reveal.
+- `KumoBottomSheet` — bottom-anchored surface for touch-first choices, with
+  `KumoBottomSheetItem` rows at a full 48px tap height.
 
 **Content and overlay**
 
@@ -276,13 +290,20 @@ correctly inside a sidebar or split pane.
   clipboard copy action.
 - `KumoModal` — modal dialog built on a custom `RawDialogRoute`, with a dimmed
   barrier and a centered card.
+- `KumoToast` and `KumoToastManager` — stacked, auto-dismissing status banners
+  overlaid at the bottom centre for info, success, warning and error states.
+- `KumoBadge` — 11px monospace pill tag for metadata, plan types and status
+  flags, in info, success, warning, error and neutral variants.
 
 **Theming**
 
 - `KumoTheme` — `InheritedWidget` that supplies the palette and asserts the
   platform guardrail.
-- `KumoColors` — the full token set: canvas, surface, subtle surface, border,
-  brand accent, three text tones and success/warning/danger status colors.
+- `KumoPalette` — the raw scale: a ten-step `gray0`–`gray9` ramp plus
+  `orange5`, `blue5`, `red5`, `green5` and `amber5` accents.
+- `KumoColors` — the semantic layer. Every token resolves to a `KumoPalette`
+  step: canvas, surface, subtle surface, border, brand accent, focus ring, four
+  text tones and info/success/warning/error status colors.
 - `KumoTypography` — `h1`, `h2`, `body`, `bodyMuted`, `caption` and `code`
   text styles.
 - `kKumoBreakpoint` — the shared 600px mobile/desktop switchover point.
