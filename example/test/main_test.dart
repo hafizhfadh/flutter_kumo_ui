@@ -18,9 +18,28 @@ const List<String> _sectionLabels = <String>[
   'List group',
   'Resource grid',
   'Responsive split',
+  'Breadcrumb',
+  'Tabs',
+  'Badges',
+  'Checkbox and select',
+  'Pagination',
+  'Toast',
   'Code block',
   'Modal',
 ];
+
+/// Scrolls [finder] into the viewport and taps it.
+Future<void> _revealAndTap(WidgetTester tester, Finder finder) async {
+  await tester.ensureVisible(finder);
+  await tester.pumpAndSettle();
+  await tester.tap(finder);
+  await tester.pumpAndSettle();
+}
+
+/// Matches [title] inside a resource card, so breadcrumb and card labels that
+/// happen to share the same text stay distinguishable.
+Finder _cardTitle(String title) =>
+    find.descendant(of: find.byType(KumoDataCard), matching: find.text(title));
 
 void main() {
   testWidgets('mobile viewport stacks the adaptive layouts', (tester) async {
@@ -44,7 +63,7 @@ void main() {
     // KumoDataGrid becomes a vertical stack of cards.
     expect(
       tester.getTopLeft(find.text('Global DNS')).dy,
-      greaterThan(tester.getTopLeft(find.text('example.com')).dy),
+      greaterThan(tester.getTopLeft(_cardTitle('example.com')).dy),
     );
 
     // KumoResponsiveLayout picks the stacked arrangement.
@@ -60,6 +79,60 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Deploy worker'), findsOneWidget);
+  });
+
+  testWidgets('mobile drives the selection, feedback and navigation widgets', (
+    tester,
+  ) async {
+    _setViewport(tester, const Size(390, 844));
+
+    await tester.pumpWidget(const KumoExampleApp());
+    await tester.pumpAndSettle();
+
+    // Checkbox toggles in place: the fill drops from the brand orange back to
+    // the resting tone.
+    BoxDecoration checkboxFill() =>
+        tester
+                .widget<AnimatedContainer>(
+                  find
+                      .descendant(
+                        of: find.byType(KumoCheckbox),
+                        matching: find.byType(AnimatedContainer),
+                      )
+                      .first,
+                )
+                .decoration!
+            as BoxDecoration;
+
+    expect(checkboxFill().color, const KumoColors().primary);
+    await _revealAndTap(tester, find.text('Enable caching'));
+    expect(checkboxFill().color, const KumoColors().subtleSurface);
+
+    // Select opens the touch-friendly action sheet, not a popover, and the
+    // sheet carries the field label as its title.
+    await _revealAndTap(tester, find.text('Free'));
+    expect(find.byType(KumoBottomSheetItem), findsNWidgets(3));
+    expect(find.text('Plan'), findsOneWidget);
+
+    await _revealAndTap(tester, find.text('Business'));
+    expect(find.text('Business'), findsOneWidget);
+    expect(find.byType(KumoBottomSheetItem), findsNothing);
+
+    // Tabs switch the selection.
+    await _revealAndTap(tester, find.text('Security'));
+    expect(find.text('Tab index 2 is selected.'), findsOneWidget);
+
+    // Pagination advances a page.
+    await _revealAndTap(tester, find.text('Next'));
+    expect(find.text('Page 3 of 5'), findsOneWidget);
+
+    // Toast overlays the screen and auto-dismisses.
+    await _revealAndTap(tester, find.text('Show success toast'));
+    expect(find.text('Worker deployed'), findsOneWidget);
+
+    await tester.pump(const Duration(seconds: 5));
+    await tester.pumpAndSettle();
+    expect(find.text('Worker deployed'), findsNothing);
   });
 
   testWidgets('desktop viewport pairs the adaptive layouts', (tester) async {
@@ -80,13 +153,13 @@ void main() {
     expect(
       tester.getTopLeft(find.text('Global DNS')).dy,
       moreOrLessEquals(
-        tester.getTopLeft(find.text('example.com')).dy,
+        tester.getTopLeft(_cardTitle('example.com')).dy,
         epsilon: 1,
       ),
     );
     expect(
       tester.getTopLeft(find.text('Global DNS')).dx,
-      greaterThan(tester.getTopLeft(find.text('example.com')).dx),
+      greaterThan(tester.getTopLeft(_cardTitle('example.com')).dx),
     );
 
     // KumoResponsiveLayout picks the side-by-side arrangement.
@@ -101,5 +174,24 @@ void main() {
       tester.getTopLeft(find.text('CACHING RULES')).dx,
       greaterThan(tester.getTopLeft(find.text('EDGE RULES')).dx),
     );
+  });
+
+  testWidgets('desktop opens the select as an anchored popover', (
+    tester,
+  ) async {
+    _setViewport(tester, const Size(1200, 900));
+
+    await tester.pumpWidget(const KumoExampleApp());
+    await tester.pumpAndSettle();
+
+    await _revealAndTap(tester, find.text('Free'));
+
+    // The desktop picker renders options in place, with no sheet title.
+    expect(find.byType(KumoBottomSheetItem), findsNWidgets(3));
+    expect(find.text('Plan'), findsNothing);
+
+    await _revealAndTap(tester, find.text('Pro'));
+    expect(find.text('Pro'), findsOneWidget);
+    expect(find.byType(KumoBottomSheetItem), findsNothing);
   });
 }

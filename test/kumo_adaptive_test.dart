@@ -41,8 +41,47 @@ void main() {
       expect(const KumoColors().focus, const Color(0xFFE9E9E9));
       expect(const KumoColors().danger, const Color(0xFFEF4444));
       expect(const KumoColors().dangerText, const Color(0xFFF87171));
-      expect(const KumoColors().success, const Color(0xFF0EA5E9));
+      expect(const KumoColors().info, const Color(0xFF0EA5E9));
+      expect(const KumoColors().success, const Color(0xFF34D399));
       expect(const KumoColors().primary, const Color(0xFFF38020));
+    });
+
+    test('semantic tokens resolve to steps of the raw palette', () {
+      const KumoColors colors = KumoColors();
+      expect(colors.canvas, KumoPalette.gray0);
+      expect(colors.surface, KumoPalette.gray1);
+      expect(colors.subtleSurface, KumoPalette.gray2);
+      expect(colors.border, KumoPalette.gray3);
+      expect(colors.textMuted, KumoPalette.gray5);
+      expect(colors.textSecondary, KumoPalette.gray6);
+      expect(colors.textPrimary, KumoPalette.gray9);
+      expect(colors.primary, KumoPalette.orange5);
+      expect(colors.info, KumoPalette.blue5);
+      expect(colors.danger, KumoPalette.red5);
+      expect(colors.success, KumoPalette.green5);
+      expect(colors.warning, KumoPalette.amber5);
+    });
+
+    test('the palette is a ten-step gray ramp plus five accents', () {
+      const List<Color> grays = <Color>[
+        KumoPalette.gray0,
+        KumoPalette.gray1,
+        KumoPalette.gray2,
+        KumoPalette.gray3,
+        KumoPalette.gray4,
+        KumoPalette.gray5,
+        KumoPalette.gray6,
+        KumoPalette.gray7,
+        KumoPalette.gray8,
+        KumoPalette.gray9,
+      ];
+      expect(grays.toSet().length, 10);
+
+      // The ramp must climb from darkest to lightest. Every step is a neutral
+      // or near-neutral gray, so the red channel alone orders the scale.
+      for (var index = 1; index < grays.length; index++) {
+        expect(grays[index].r, greaterThan(grays[index - 1].r));
+      }
     });
 
     test('platform guard is inert on native targets', () {
