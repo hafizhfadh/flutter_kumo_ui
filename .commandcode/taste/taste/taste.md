@@ -13,5 +13,8 @@
 - Requires color combinations used for text to clear WCAG AA contrast (>= 4.5:1) against every background they are painted on, with the weaker 3:1 threshold reserved for non-text indicators; expects the ratios to be measured, not assumed. Confidence: 0.85
 - Prefers design tokens named by semantic role (canvas/surface/border/textPrimary/dangerText) over raw hue ramps, and accepts a documented role model in place of a literal N-step gray scale. Confidence: 0.6
 - Prefers work to be grounded in the canonical upstream reference (official docs/site) and any spec premise that conflicts with it to be flagged and reported rather than satisfied by inventing values. Confidence: 0.5
+- Prefers single-import ergonomics for a library: re-exports the core Flutter primitives it depends on (from `package:flutter/widgets.dart`) so a consumer can build a screen with only `import 'package:kumo_ui/kumo_ui.dart';`, while still refusing to re-export any Material/Cupertino symbols. Confidence: 0.6
+- Keeps source files organized into clean, clearly commented sections (anti-slop code cleanliness) grouped by concern (primitives, components, theming) rather than a flat dump of declarations. Confidence: 0.6
+- Releases follow conventional-commit messages with a type/scope prefix (e.g. `feat(dx): ...`), an annotated semver git tag (`git tag -a vX.Y.Z -m ...`), and pushing the branch plus tags to origin. Confidence: 0.6
 - Targets a maximum pub.dev score: full README with badges, a platform-support table, copy-pasteable usage examples and a component catalog, plus complete public dartdoc. Confidence: 0.55
-steable usage examples and a component catalog, plus complete public dartdoc. Confidence: 0.55
+- Expects user-facing documentation (README, CHANGELOG, version badges, install snippets) to be kept in sync with new features and configuration changes in the same pass, leaving no stale version numbers, repo URLs, or outdated claims behind. Confidence: 0.6

@@ -2,7 +2,7 @@
 
 **A mobile-first Flutter implementation of Cloudflare's Kumo UI design system, built on `package:flutter/widgets.dart` alone.**
 
-![version](https://img.shields.io/badge/version-0.1.0--beta.1-F38020)
+![version](https://img.shields.io/badge/version-1.0.1-F38020)
 ![platforms](https://img.shields.io/badge/platform-android_%7C_ios_%7C_macos_%7C_linux_%7C_windows-3DDC84)
 ![web](https://img.shields.io/badge/web-not_supported-critical)
 ![flutter](https://img.shields.io/badge/flutter-widgets.dart_only-02569B)
@@ -33,6 +33,9 @@ resolves its colors from `KumoTheme.of(context)`.
   `MaterialApp`, `Theme`, `Card` or `InkWell` dependencies to leak into your
   widget tree, so `kumo_ui` composes cleanly with any navigation or state
   solution you already use.
+- **Single-import ergonomics.** The core `widgets.dart` primitives are
+  re-exported from `kumo_ui.dart`, so an app builds a whole screen from one
+  import. Material and Cupertino are still never exposed.
 - **Mobile-first, then adaptive.** Layouts are designed at phone widths first:
   full-width tap targets with a 48px minimum height, vertical stacks instead of
   forced multi-column rows, and expandable cards for dense resource data. The
@@ -57,15 +60,38 @@ Add the package and its icon dependency to your `pubspec.yaml`:
 dependencies:
   flutter:
     sdk: flutter
-  kumo_ui: ^0.1.0-beta.1
+  kumo_ui: ^1.0.1
   phosphor_icons: ^3.0.1
 ```
 
 Then import it:
 
 ```dart
-import 'package:flutter/widgets.dart';
 import 'package:kumo_ui/kumo_ui.dart';
+```
+
+That single import is enough to build a screen. `kumo_ui` re-exports the core
+Flutter primitives it is itself built from — `Widget`, `StatelessWidget`,
+`StatefulWidget`, `State`, `BuildContext`, `Column`, `Row`, `Stack`,
+`Container`, `Text`, `Color`, `WidgetsApp`, `Navigator`, `MediaQuery` and
+friends — so you do not have to add `package:flutter/widgets.dart` alongside
+it.
+
+Two things worth knowing about those re-exports:
+
+- **They come from `package:flutter/widgets.dart` only.** Material and Cupertino
+  symbols are never exposed. Because both paths resolve to the *same* Flutter
+  declarations, importing `kumo_ui` next to `material.dart` cannot produce an
+  ambiguous name.
+- **It is a curated subset, not the whole of `widgets.dart`.** If you reach for
+  something outside it, add `package:flutter/widgets.dart` yourself — the
+  compiler will point at the missing name immediately.
+
+The Phosphor glyph constants still come from `phosphor_icons`, since that is
+where the icon names are declared:
+
+```dart
+import 'package:phosphor_icons/phosphor_icons.dart';
 ```
 
 `kumo_ui` targets Android, iOS, macOS, Linux and Windows. Do not add a web
@@ -80,7 +106,6 @@ the navigator, text direction and `MediaQuery` that Kumo widgets rely on —
 without pulling in Material.
 
 ```dart
-import 'package:flutter/widgets.dart';
 import 'package:kumo_ui/kumo_ui.dart';
 
 void main() {
@@ -116,7 +141,6 @@ class MyApp extends StatelessWidget {
 ### 2. Build a mobile list with `KumoListGroup` and `KumoListItem`
 
 ```dart
-import 'package:flutter/widgets.dart';
 import 'package:kumo_ui/kumo_ui.dart';
 import 'package:phosphor_icons/phosphor_icons.dart';
 
@@ -159,7 +183,6 @@ multi-column grid on wider containers, reusing the very same cards in both
 arrangements.
 
 ```dart
-import 'package:flutter/widgets.dart';
 import 'package:kumo_ui/kumo_ui.dart';
 
 class ZoneOverview extends StatelessWidget {
@@ -202,7 +225,6 @@ values never overflow.
 ### 4. Adapt between mobile and desktop with `KumoResponsiveLayout`
 
 ```dart
-import 'package:flutter/widgets.dart';
 import 'package:kumo_ui/kumo_ui.dart';
 
 class AdaptivePanel extends StatelessWidget {
@@ -311,7 +333,8 @@ correctly inside a sidebar or split pane.
 ## Example
 
 A runnable showcase lives in [`example/`](example/lib/main.dart). It exercises
-every component at both a phone and a desktop viewport:
+every component at both a phone and a desktop viewport, and imports only
+`package:kumo_ui/kumo_ui.dart` plus the Phosphor glyph constants:
 
 ```sh
 cd example
@@ -321,9 +344,10 @@ flutter run
 ## Additional information
 
 - Contributions, bug reports and feature requests are welcome via the
-  [issue tracker](https://github.com/hafizhfadh/kumo_ui/issues).
-- The package is pre-1.0: minor versions may change public API while the
-  component surface settles.
+  [issue tracker](https://github.com/hafizhfadh/flutter_kumo_ui/issues).
+- `kumo_ui` follows semantic versioning from 1.0.0: additive API ships in minor
+  releases, and fixes or internal changes ship in patches. See
+  [CHANGELOG.md](CHANGELOG.md) for the detail of each release.
 - `kumo_ui` is an independent, community implementation of a visual language. It
   is not affiliated with, endorsed by, or published by Cloudflare, Inc.
 
