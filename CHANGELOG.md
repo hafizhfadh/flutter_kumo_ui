@@ -1,3 +1,18 @@
+## 1.0.1
+
+Developer-experience release.
+
+- `lib/kumo_ui.dart` now re-exports the core Flutter widget primitives
+  (`Widget`, `Column`, `Text`, `Color`, `WidgetsApp`, `Navigator` and friends), so
+  an app can build a Kumo screen from a single
+  `import 'package:kumo_ui/kumo_ui.dart';`.
+- Re-exports come from `package:flutter/widgets.dart` only. No Material or
+  Cupertino symbols are exposed.
+- There is no `Margin` re-export: Flutter has no such class, and spacing is
+  expressed with `EdgeInsets`.
+- The bundled example now compiles without importing
+  `package:flutter/widgets.dart`.
+
 ## 1.0.0
 
 - Initial stable release of `kumo_ui`.

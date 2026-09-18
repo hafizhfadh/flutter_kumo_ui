@@ -1,4 +1,6 @@
-import 'package:flutter/widgets.dart';
+// Everything Flutter-facing comes from kumo_ui: no `package:flutter/widgets.dart`
+// import is needed. Only the Phosphor glyph constants come from elsewhere,
+// because that is where the icon names are declared.
 import 'package:kumo_ui/kumo_ui.dart';
 import 'package:phosphor_icons/phosphor_icons.dart';
 

@@ -1,6 +1,106 @@
 /// A mobile-first Flutter implementation of Cloudflare's Kumo UI design
 /// system, built on `package:flutter/widgets.dart` alone.
+///
+/// Importing this library is enough to build a screen: the Flutter primitives a
+/// Kumo screen needs are re-exported below, so an app never has to add
+/// `package:flutter/widgets.dart` alongside it.
+///
+/// ```dart
+/// import 'package:kumo_ui/kumo_ui.dart';
+/// ```
+///
+/// Material and Cupertino are deliberately not re-exported.
 library;
+
+// ---------------------------------------------------------------------------
+// Flutter primitives
+// ---------------------------------------------------------------------------
+
+/// Core Flutter widget primitives, re-exported for single-import ergonomics.
+///
+/// There is deliberately no `Margin` entry: Flutter has no such class, and
+/// spacing is expressed with [EdgeInsets] / [EdgeInsetsGeometry].
+export 'package:flutter/widgets.dart'
+    show
+        // Core framework types
+        Widget,
+        StatelessWidget,
+        StatefulWidget,
+        State,
+        BuildContext,
+        Key,
+        ValueKey,
+        GlobalKey,
+        // Layout primitives
+        Column,
+        Row,
+        Stack,
+        Positioned,
+        Expanded,
+        Flexible,
+        Spacer,
+        Container,
+        SizedBox,
+        Padding,
+        Align,
+        Center,
+        ConstrainedBox,
+        BoxConstraints,
+        CrossAxisAlignment,
+        MainAxisSize,
+        Wrap,
+        // Geometry, paints and insets
+        EdgeInsets,
+        EdgeInsetsGeometry,
+        Alignment,
+        AlignmentGeometry,
+        BorderRadius,
+        BoxDecoration,
+        Border,
+        BorderSide,
+        BoxShape,
+        Color,
+        ColoredBox,
+        // Text
+        Text,
+        TextStyle,
+        TextEditingController,
+        TextOverflow,
+        // Scroll and lists
+        ListView,
+        SingleChildScrollView,
+        CustomScrollView,
+        SliverList,
+        SliverGrid,
+        // Interactivity and gestures
+        GestureDetector,
+        MouseRegion,
+        Focus,
+        FocusNode,
+        Semantics,
+        SystemMouseCursors,
+        VoidCallback,
+        ValueChanged,
+        // Animation essentials
+        AnimatedContainer,
+        AnimatedOpacity,
+        AnimatedCrossFade,
+        SizeTransition,
+        AnimationController,
+        // Navigation and app scaffolding
+        runApp,
+        WidgetsApp,
+        Navigator,
+        PageRouteBuilder,
+        RouteSettings,
+        WidgetBuilder,
+        MediaQuery,
+        LayoutBuilder,
+        SafeArea;
+
+// ---------------------------------------------------------------------------
+// Kumo components
+// ---------------------------------------------------------------------------
 
 export 'src/components/kumo_accordion.dart';
 export 'src/components/kumo_badge.dart';
@@ -21,7 +121,17 @@ export 'src/components/kumo_select.dart';
 export 'src/components/kumo_switch.dart';
 export 'src/components/kumo_tabs.dart';
 export 'src/components/kumo_toast.dart';
+
+// ---------------------------------------------------------------------------
+// Layout helpers
+// ---------------------------------------------------------------------------
+
 export 'src/layout/kumo_responsive_layout.dart';
+
+// ---------------------------------------------------------------------------
+// Theming
+// ---------------------------------------------------------------------------
+
 export 'src/theme/kumo_colors.dart';
 export 'src/theme/kumo_theme.dart';
 export 'src/theme/kumo_typography.dart';
