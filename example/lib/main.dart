@@ -31,10 +31,7 @@ class _KumoExampleAppState extends State<KumoExampleApp> {
       title: 'Kumo UI',
       mode: _mode,
       debugShowCheckedModeBanner: false,
-      home: KumoExampleHome(
-        mode: _mode,
-        onModeChanged: (KumoThemeMode mode) => setState(() => _mode = mode),
-      ),
+      home: KumoExampleHome(mode: _mode, onModeChanged: (KumoThemeMode mode) => setState(() => _mode = mode)),
     );
   }
 }
@@ -42,11 +39,7 @@ class _KumoExampleAppState extends State<KumoExampleApp> {
 /// Scrollable screen exercising every component in the library.
 class KumoExampleHome extends StatefulWidget {
   /// Creates the showcase screen.
-  const KumoExampleHome({
-    super.key,
-    required this.mode,
-    required this.onModeChanged,
-  });
+  const KumoExampleHome({super.key, required this.mode, required this.onModeChanged});
 
   /// The mode the app is currently in.
   final KumoThemeMode mode;
@@ -120,15 +113,8 @@ class _KumoExampleHomeState extends State<KumoExampleHome> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
-            for (final String label in <String>[
-              'Rename',
-              'Duplicate',
-              'Delete',
-            ])
-              KumoBottomSheetItem(
-                label: label,
-                onTap: () => Navigator.of(sheetContext).pop(label),
-              ),
+            for (final String label in <String>['Rename', 'Duplicate', 'Delete'])
+              KumoBottomSheetItem(label: label, onTap: () => Navigator.of(sheetContext).pop(label)),
             const SizedBox(height: 8),
           ],
         ),
@@ -171,10 +157,7 @@ class _KumoExampleHomeState extends State<KumoExampleHome> {
         KumoListItem(
           title: 'Always use HTTPS',
           subtitle: 'On',
-          leading: const PhosphorIcon(
-            PhosphorIconsRegular.shieldCheck,
-            size: 18,
-          ),
+          leading: const PhosphorIcon(PhosphorIconsRegular.shieldCheck, size: 18),
           onTap: () {},
         ),
         const KumoListItem(title: 'Automatic HTTPS rewrites', subtitle: 'On'),
@@ -241,18 +224,11 @@ class _KumoExampleHomeState extends State<KumoExampleHome> {
                 onSelected: widget.onModeChanged,
               ),
               const SizedBox(height: 10),
-              Text(
-                'Painting the ${isLight ? 'light' : 'dark'} scheme.',
-                style: styles.caption,
-              ),
+              Text('Painting the ${isLight ? 'light' : 'dark'} scheme.', style: styles.caption),
               const SizedBox(height: 28),
               const _SectionLabel('Segmented control'),
               KumoSegmentedControl<String>(
-                segments: const <String, String>{
-                  'overview': 'Overview',
-                  'dns': 'DNS',
-                  'workers': 'Workers',
-                },
+                segments: const <String, String>{'overview': 'Overview', 'dns': 'DNS', 'workers': 'Workers'},
                 selected: _segment,
                 onSelected: (value) => setState(() => _segment = value),
               ),
@@ -264,11 +240,7 @@ class _KumoExampleHomeState extends State<KumoExampleHome> {
                 label: 'Api token',
                 placeholder: 'Paste token',
                 controller: _token,
-                prefixIcon: PhosphorIcon(
-                  PhosphorIconsRegular.key,
-                  size: 16,
-                  color: colors.textSecondary,
-                ),
+                prefixIcon: PhosphorIcon(PhosphorIconsRegular.key, size: 16, color: colors.textSecondary),
                 onChanged: (_) => setState(() {}),
               ),
               const SizedBox(height: 12),
@@ -282,13 +254,10 @@ class _KumoExampleHomeState extends State<KumoExampleHome> {
               const _SectionLabel('Toggle'),
               Row(
                 children: [
-                  Expanded(
-                    child: Text('Notifications', style: styles.body),
-                  ),
+                  Expanded(child: Text('Notifications', style: styles.body)),
                   KumoSwitch(
                     value: _notificationsEnabled,
-                    onChanged: (value) =>
-                        setState(() => _notificationsEnabled = value),
+                    onChanged: (value) => setState(() => _notificationsEnabled = value),
                   ),
                 ],
               ),
@@ -296,11 +265,7 @@ class _KumoExampleHomeState extends State<KumoExampleHome> {
               Row(
                 children: [
                   Expanded(child: Text('Analytics', style: styles.body)),
-                  const KumoSwitch(
-                    value: true,
-                    onChanged: _noop,
-                    isDisabled: true,
-                  ),
+                  const KumoSwitch(value: true, onChanged: _noop, isDisabled: true),
                 ],
               ),
               const SizedBox(height: 28),
@@ -317,17 +282,11 @@ class _KumoExampleHomeState extends State<KumoExampleHome> {
               KumoListGroup(
                 title: 'Zone settings',
                 children: [
-                  const KumoListItem(
-                    title: 'DNS records',
-                    subtitle: '42 records',
-                  ),
+                  const KumoListItem(title: 'DNS records', subtitle: '42 records'),
                   const KumoListItem(title: 'Caching', subtitle: 'Standard'),
                   KumoListItem(
                     title: 'Add a record',
-                    leading: const PhosphorIcon(
-                      PhosphorIconsRegular.plus,
-                      size: 18,
-                    ),
+                    leading: const PhosphorIcon(PhosphorIconsRegular.plus, size: 18),
                     onTap: () {},
                   ),
                 ],
@@ -342,10 +301,7 @@ class _KumoExampleHomeState extends State<KumoExampleHome> {
                     subtitle: 'Zone · Pro plan',
                     statusLabel: 'Active',
                     details: [
-                      KumoDataPair(
-                        label: 'Nameservers',
-                        value: 'ada.ns.cloudflare.com',
-                      ),
+                      KumoDataPair(label: 'Nameservers', value: 'ada.ns.cloudflare.com'),
                       KumoDataPair(label: 'Records', value: '42'),
                     ],
                   ),
@@ -356,12 +312,7 @@ class _KumoExampleHomeState extends State<KumoExampleHome> {
                     // An explicit status chip color, instead of the default.
                     statusColor: colors.warning,
                     initiallyExpanded: true,
-                    details: const [
-                      KumoDataPair(
-                        label: 'Nameservers',
-                        value: 'bob.ns.cloudflare.com',
-                      ),
-                    ],
+                    details: const [KumoDataPair(label: 'Nameservers', value: 'bob.ns.cloudflare.com')],
                   ),
                   const KumoDataCard(
                     title: 'workers.dev',
@@ -380,11 +331,7 @@ class _KumoExampleHomeState extends State<KumoExampleHome> {
                 breakpoint: kKumoBreakpoint,
                 mobile: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    edgeRules,
-                    const SizedBox(height: 12),
-                    cachingRules,
-                  ],
+                  children: [edgeRules, const SizedBox(height: 12), cachingRules],
                 ),
                 desktop: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -399,14 +346,8 @@ class _KumoExampleHomeState extends State<KumoExampleHome> {
               const _SectionLabel('Breadcrumb'),
               KumoBreadcrumb(
                 items: <KumoBreadcrumbItem>[
-                  KumoBreadcrumbItem(
-                    label: 'Accounts',
-                    onTap: () => setState(() => _tabIndex = 0),
-                  ),
-                  KumoBreadcrumbItem(
-                    label: 'example.com',
-                    onTap: () => setState(() => _tabIndex = 1),
-                  ),
+                  KumoBreadcrumbItem(label: 'Accounts', onTap: () => setState(() => _tabIndex = 0)),
+                  KumoBreadcrumbItem(label: 'example.com', onTap: () => setState(() => _tabIndex = 1)),
                   const KumoBreadcrumbItem(label: 'DNS'),
                 ],
               ),
@@ -418,10 +359,7 @@ class _KumoExampleHomeState extends State<KumoExampleHome> {
                 onTabChanged: (int index) => setState(() => _tabIndex = index),
               ),
               const SizedBox(height: 12),
-              Text(
-                'Tab index $_tabIndex is selected.',
-                style: styles.caption,
-              ),
+              Text('Tab index $_tabIndex is selected.', style: styles.caption),
               const SizedBox(height: 28),
               const _SectionLabel('Badges'),
               const Wrap(
@@ -429,15 +367,8 @@ class _KumoExampleHomeState extends State<KumoExampleHome> {
                 runSpacing: 8,
                 children: <Widget>[
                   KumoBadge(label: 'Pro plan', variant: KumoBadgeVariant.info),
-                  KumoBadge(
-                    label: 'Active',
-                    variant: KumoBadgeVariant.success,
-                    icon: PhosphorIconsRegular.checkCircle,
-                  ),
-                  KumoBadge(
-                    label: 'Proxied',
-                    variant: KumoBadgeVariant.warning,
-                  ),
+                  KumoBadge(label: 'Active', variant: KumoBadgeVariant.success, icon: PhosphorIconsRegular.checkCircle),
+                  KumoBadge(label: 'Proxied', variant: KumoBadgeVariant.warning),
                   KumoBadge(
                     label: 'Errored',
                     variant: KumoBadgeVariant.error,
@@ -451,25 +382,15 @@ class _KumoExampleHomeState extends State<KumoExampleHome> {
               KumoCheckbox(
                 value: _cachingEnabled,
                 label: 'Enable caching',
-                onChanged: (bool value) =>
-                    setState(() => _cachingEnabled = value),
+                onChanged: (bool value) => setState(() => _cachingEnabled = value),
               ),
               const SizedBox(height: 12),
-              const KumoCheckbox(
-                value: true,
-                label: 'Always online',
-                onChanged: _noop,
-                isDisabled: true,
-              ),
+              const KumoCheckbox(value: true, label: 'Always online', onChanged: _noop, isDisabled: true),
               const SizedBox(height: 12),
               KumoSelect<String>(
                 value: _plan,
                 label: 'Plan',
-                options: const <String, String>{
-                  'free': 'Free',
-                  'pro': 'Pro',
-                  'business': 'Business',
-                },
+                options: const <String, String>{'free': 'Free', 'pro': 'Pro', 'business': 'Business'},
                 onChanged: (String value) => setState(() => _plan = value),
               ),
               const SizedBox(height: 28),
@@ -517,18 +438,11 @@ class _KumoExampleHomeState extends State<KumoExampleHome> {
                     variant: KumoButtonVariant.secondary,
                     onPressed: () => _showToast(KumoToastKind.error),
                   ),
-                  KumoButton(
-                    label: 'Clear toasts',
-                    variant: KumoButtonVariant.secondary,
-                    onPressed: _clearToasts,
-                  ),
+                  KumoButton(label: 'Clear toasts', variant: KumoButtonVariant.secondary, onPressed: _clearToasts),
                 ],
               ),
               const SizedBox(height: 10),
-              Text(
-                'Active toasts: ${KumoToastManager.activeCount}',
-                style: styles.caption,
-              ),
+              Text('Active toasts: ${KumoToastManager.activeCount}', style: styles.caption),
               const SizedBox(height: 12),
               // The banner itself, rendered in place rather than queued.
               if (_inlineToastVisible)
@@ -546,10 +460,7 @@ class _KumoExampleHomeState extends State<KumoExampleHome> {
                 ),
               const SizedBox(height: 28),
               const _SectionLabel('Code block'),
-              const KumoCodeBlock(
-                code: 'npx wrangler deploy --env production',
-                language: 'bash',
-              ),
+              const KumoCodeBlock(code: 'npx wrangler deploy --env production', language: 'bash'),
               const SizedBox(height: 12),
               const KumoCodeBlock(code: 'console.log("copy me")'),
               const SizedBox(height: 28),
@@ -579,11 +490,7 @@ class _KumoExampleHomeState extends State<KumoExampleHome> {
               ),
               const SizedBox(height: 28),
               const _SectionLabel('Modal'),
-              KumoButton(
-                label: 'Open dialog',
-                icon: PhosphorIconsRegular.arrowSquareOut,
-                onPressed: _openDialog,
-              ),
+              KumoButton(label: 'Open dialog', icon: PhosphorIconsRegular.arrowSquareOut, onPressed: _openDialog),
               const SizedBox(height: 40),
             ],
           ),
