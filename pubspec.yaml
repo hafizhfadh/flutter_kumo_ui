@@ -13,6 +13,10 @@ dependencies:
   flutter:
     sdk: flutter
   phosphor_icons: ^3.0.1
+  # The chart projection engine is pure Dart and imports no Flutter widgets, so
+  # it takes Matrix4 and Vector3 straight from the math package Flutter itself
+  # depends on. Flutter only re-exports Matrix4, not Vector3.
+  vector_math: ^2.1.4
 
 dev_dependencies:
   flutter_test:

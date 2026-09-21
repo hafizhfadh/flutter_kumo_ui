@@ -160,6 +160,7 @@ export 'src/charts/kumo_chart_container.dart';
 export 'src/charts/kumo_chart_controller.dart';
 export 'src/charts/kumo_lttb.dart';
 export 'src/charts/kumo_ring_buffer.dart';
+export 'src/charts/timeseries/kumo_time_window.dart';
 
 // ---------------------------------------------------------------------------
 // Layout helpers

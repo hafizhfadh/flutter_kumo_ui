@@ -32,9 +32,15 @@ token from `KumoTheme.of(context)`; it never writes a raw `Color(0x...)`.
 ## 2. Core constraints
 
 - Package imports are limited to `package:flutter/widgets.dart`,
-  `package:flutter/services.dart`, `package:flutter/foundation.dart` and
+  `package:flutter/services.dart`, `package:flutter/foundation.dart`,
+  `package:vector_math/vector_math_64.dart` and
   `package:phosphor_icons/phosphor_icons.dart`. The `dart:` libraries
   (`dart:core`, `dart:async`, `dart:math`) are unrestricted.
+  - `vector_math` is permitted **only** in `lib/src/charts/`, for `Matrix4` and
+    `Vector3`. The chart projection engine is pure Dart and imports no Flutter
+    widgets at all, and Flutter re-exports `Matrix4` but not `Vector3`. It is
+    the same math package Flutter itself depends on, so it adds no transitive
+    weight. Do not reach for it elsewhere.
   - `phosphor_flutter` is NOT usable: 2.1.0 declares
     `class PhosphorIconData extends IconData`, and `IconData` is a `final class`
     since Flutter 3.43. `phosphor_icons` is the maintained fork that fixes this.
