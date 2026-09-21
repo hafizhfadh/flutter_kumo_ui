@@ -121,11 +121,11 @@ widget or guess a parameter name.
 | Area | Widgets |
 | --- | --- |
 | Shell | `KumoScaffold` |
-| Form | `KumoInput` (single or multi-line), `KumoSwitch`, `KumoCheckbox`, `KumoSelect<T>`, `KumoSegmentedControl<T>`, `KumoButton`, `KumoLabel` |
+| Form | `KumoInput` (single or multi-line), `KumoSensitiveInput`, `KumoSwitch`, `KumoCheckbox`, `KumoRadio<T>`, `KumoSelect<T>`, `KumoSegmentedControl<T>`, `KumoButton`, `KumoLabel` |
 | Navigation | `KumoBreadcrumb` + `KumoBreadcrumbItem`, `KumoTabs`, `KumoPagination`, `KumoLink` |
 | Structure | `KumoHeader`, `KumoListGroup` + `KumoListItem`, `KumoDataGrid`, `KumoDataCard` + `KumoDataPair`, `KumoAccordion`, `KumoBottomSheet` + `KumoBottomSheetItem`, `KumoResponsiveLayout` |
-| Feedback | `KumoLoader`, `KumoMeter`, `KumoEmpty`, `KumoSkeleton`, `KumoToast` + `KumoToastManager`, `KumoBadge` |
-| Overlay | `KumoCodeBlock`, `KumoModal` |
+| Feedback | `KumoBanner`, `KumoLoader`, `KumoMeter`, `KumoEmpty`, `KumoSkeleton`, `KumoToast` + `KumoToastManager`, `KumoBadge` |
+| Overlay | `KumoCodeBlock`, `KumoModal`, `KumoTooltip` |
 
 Start every screen from `KumoScaffold` unless it needs a nested layout. For the
 full upstream component set and what the package still lacks, see the companion

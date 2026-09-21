@@ -121,6 +121,7 @@ export 'src/kumo_app.dart';
 
 export 'src/components/kumo_accordion.dart';
 export 'src/components/kumo_badge.dart';
+export 'src/components/kumo_banner.dart';
 export 'src/components/kumo_bottom_sheet.dart';
 export 'src/components/kumo_breadcrumb.dart';
 export 'src/components/kumo_button.dart';
@@ -138,13 +139,16 @@ export 'src/components/kumo_loader.dart';
 export 'src/components/kumo_meter.dart';
 export 'src/components/kumo_modal.dart';
 export 'src/components/kumo_pagination.dart';
+export 'src/components/kumo_radio.dart';
 export 'src/components/kumo_scaffold.dart';
 export 'src/components/kumo_segmented_control.dart';
 export 'src/components/kumo_select.dart';
+export 'src/components/kumo_sensitive_input.dart';
 export 'src/components/kumo_skeleton.dart';
 export 'src/components/kumo_switch.dart';
 export 'src/components/kumo_tabs.dart';
 export 'src/components/kumo_toast.dart';
+export 'src/components/kumo_tooltip.dart';
 
 // ---------------------------------------------------------------------------
 // Layout helpers

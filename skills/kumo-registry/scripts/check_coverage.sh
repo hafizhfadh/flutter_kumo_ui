@@ -34,7 +34,7 @@ while IFS='|' read -r upstream ours; do
 done <<'MAP'
 Autocomplete|MISSING
 Badge|KumoBadge
-Banner|KumoToast
+Banner|KumoBanner
 Breadcrumbs|KumoBreadcrumb
 Button|KumoButton
 Button Group|MISSING
@@ -63,9 +63,9 @@ Loader|KumoLoader
 Meter|KumoMeter
 Pagination|KumoPagination
 Popover|MISSING
-Radio|MISSING
+Radio|KumoRadio
 Select|KumoSelect
-Sensitive Input|KumoInput
+Sensitive Input|KumoSensitiveInput
 Sidebar|MISSING
 Skeleton Line|KumoSkeleton
 Switch|KumoSwitch
@@ -76,7 +76,7 @@ Tabs|KumoTabs
 Text|KumoTypography
 Toolbar|MISSING
 Toast|KumoToast
-Tooltip|MISSING
+Tooltip|KumoTooltip
 Scaffold (kumo_ui only)|KumoScaffold
 MAP
 

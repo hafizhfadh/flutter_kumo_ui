@@ -3,7 +3,7 @@
 **A mobile-first Flutter implementation of Cloudflare's Kumo UI design system, built on `package:flutter/widgets.dart` alone.**
 
 [![pub package](https://img.shields.io/pub/v/kumo_ui.svg)](https://pub.dev/packages/kumo_ui)
-![version](https://img.shields.io/badge/version-1.4.0-F38020)
+![version](https://img.shields.io/badge/version-1.5.0-F38020)
 ![platforms](https://img.shields.io/badge/platform-android_%7C_ios_%7C_macos_%7C_linux_%7C_windows-3DDC84)
 ![web](https://img.shields.io/badge/web-not_supported-critical)
 ![flutter](https://img.shields.io/badge/flutter-widgets.dart_only-02569B)
@@ -71,7 +71,7 @@ Add the package and its icon dependency to your `pubspec.yaml`:
 dependencies:
   flutter:
     sdk: flutter
-  kumo_ui: ^1.4.0
+  kumo_ui: ^1.5.0
   phosphor_icons: ^3.0.1
 ```
 
@@ -527,9 +527,10 @@ ships a Flutter equivalent; `[ ]` means it does not yet. The same list, with a
 drift check, lives in
 [`skills/kumo-registry/`](skills/kumo-registry/references/coverage.md).
 
-**Implemented — 21 of 45**
+**Implemented — 25 of 45**
 
 - [x] Badge — `KumoBadge`
+- [x] Banner — `KumoBanner`
 - [x] Breadcrumbs — `KumoBreadcrumb`
 - [x] Button — `KumoButton`
 - [x] Checkbox — `KumoCheckbox`
@@ -544,26 +545,27 @@ drift check, lives in
 - [x] Loader — `KumoLoader`
 - [x] Meter — `KumoMeter`
 - [x] Pagination — `KumoPagination`
+- [x] Radio — `KumoRadio`
 - [x] Select — `KumoSelect`
+- [x] Sensitive Input — `KumoSensitiveInput`
 - [x] Skeleton Line — `KumoSkeleton`
 - [x] Switch — `KumoSwitch`
 - [x] Tabs — `KumoTabs`
 - [x] Text — `KumoTypography`
 - [x] Toast — `KumoToast`
+- [x] Tooltip — `KumoTooltip`
 
-**Partial — 8** — the capability exists inside another widget rather than as one
+**Partial — 6** — the capability exists inside another widget rather than as one
 of its own:
 
-- [x] Banner — `KumoToast` is transient only, there is no inline banner
 - [x] Clipboard Text — the `KumoCodeBlock` copy action
 - [x] CodeHighlighted — `KumoCodeBlock` renders monospace, with no highlighting
 - [x] Grid — `KumoDataGrid` is a card grid, not a general layout grid
 - [x] Inline Copy Text — the `KumoCodeBlock` copy action
 - [x] Layer Card — `KumoDataCard` is a resource card, not a general layer
-- [x] Sensitive Input — `KumoInput(obscureText: true)`, with no reveal affordance
 - [x] Table — `KumoDataGrid` lays out cards, not a true data table
 
-**Not implemented — 15**
+**Not implemented — 13**
 
 - [ ] Autocomplete
 - [ ] Button Group
@@ -574,12 +576,10 @@ of its own:
 - [ ] InputGroup
 - [ ] Layer Dialog
 - [ ] Popover
-- [ ] Radio
 - [ ] Sidebar
 - [ ] Table of Contents
 - [ ] Tag Input
 - [ ] Toolbar
-- [ ] Tooltip
 
 **Charts** — Timeseries, Maps, Sankey and Custom Chart are absent entirely.
 

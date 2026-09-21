@@ -101,6 +101,20 @@ the knob is the scheme's `textPrimary`.
 Also `static const double KumoCheckbox.boxSize = 18`. Checked fill is `primary`,
 glyph is `canvas`. The whole row is one 48px tap target.
 
+### `KumoRadio<T>`
+
+| Param | Type | Default |
+| --- | --- | --- |
+| `value` | `T` | required |
+| `groupValue` | `T` | required |
+| `onChanged` | `ValueChanged<T>?` | `null` (renders inert) |
+| `label` | `String?` | `null` |
+| `isDisabled` | `bool` | `false` |
+
+Also `static const double KumoRadio.size = 18`. Fully controlled: compare
+`value` with `groupValue` yourself by threading the selected value through your
+own state. Announced as a mutually exclusive group.
+
 ### `KumoSelect<T>`
 
 | Param | Type | Default |
@@ -133,6 +147,20 @@ Fully controlled. Selected segment lifts onto `surface` with a `primary` label.
 
 `KumoButtonVariant` is `primary` (brand fill, label in `canvas`) or `secondary`
 (`subtleSurface` fill, `border` outline). 48px minimum.
+
+### `KumoSensitiveInput`
+
+| Param | Type | Default |
+| --- | --- | --- |
+| `label` | `String?` | `null` |
+| `placeholder` | `String?` | `null` |
+| `controller` | `TextEditingController?` | `null` (self-owned) |
+| `errorMessage` | `String?` | `null` |
+| `onChanged` | `ValueChanged<String>?` | `null` |
+
+`KumoInput` composed with a reveal toggle in its suffix slot. Masked by default;
+the toggle is a 48px target. Use `KumoInput(obscureText: true)` instead when the
+value never needs reading back.
 
 ---
 
@@ -369,6 +397,31 @@ The screen shell. Fills the space it is given, so use it at the root of a route.
 ---
 
 ## Feedback and primitives
+
+### `KumoBanner`
+
+| Param | Type | Default |
+| --- | --- | --- |
+| `message` | `String` | required |
+| `title` | `String?` | `null` |
+| `kind` | `KumoBannerKind` | `KumoBannerKind.info` |
+| `action` | `Widget?` | `null` |
+| `onDismiss` | `VoidCallback?` | `null` |
+
+`KumoBannerKind` is `info`, `success`, `warning`, `error`. An inline, persistent
+message. The counterpart to `KumoToast`, which is transient and floats above the
+page. `error` uses `danger` for the icon, which is non-text, so 3:1 applies.
+
+### `KumoTooltip`
+
+| Param | Type | Default |
+| --- | --- | --- |
+| `message` | `String` | required |
+| `child` | `Widget` | required |
+| `placement` | `KumoTooltipPlacement` | `KumoTooltipPlacement.top` |
+
+Shows on hover (desktop) or long press (touch), and attaches `message` to the
+child as a semantics tooltip. `KumoTooltipPlacement` is `top` or `bottom`.
 
 ### `KumoLoader`
 

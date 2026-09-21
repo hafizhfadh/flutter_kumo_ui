@@ -1,3 +1,20 @@
+## 1.5.0
+
+Four more upstream components, moving coverage to 25 of 45.
+
+- `KumoRadio<T>` closes the highest-value gap in the form set. It mirrors
+  `KumoCheckbox` deliberately: an 18px control, one 48px tap target per row, the
+  brand signal when chosen, and a mutually exclusive group announced to
+  assistive technology.
+- `KumoBanner` is the persistent counterpart to `KumoToast`: an inline message
+  that stays where you put it, with four kinds, an optional action and an
+  optional dismiss. It upgrades Banner from partial to covered, because a
+  transient toast could not carry a message the user needs to read twice.
+- `KumoSensitiveInput` adds a reveal toggle for secrets the user has to verify,
+  composing `KumoInput` rather than reimplementing it.
+- `KumoTooltip` shows a short label on hover (desktop) or long press (touch),
+  and attaches the same text as a semantics tooltip for platforms with no hover.
+
 ## 1.4.0
 
 The screen shell, plus the primitives the component set was missing.

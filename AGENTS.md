@@ -93,7 +93,7 @@ token from `KumoTheme.of(context)`; it never writes a raw `Color(0x...)`.
 ```
 lib/kumo_ui.dart          public barrel: curated widgets.dart re-export + every component
 lib/src/kumo_app.dart     KumoApp and KumoApp.router
-lib/src/components/       the 27 widgets
+lib/src/components/       the 31 widgets
 lib/src/layout/           kKumoBreakpoint, KumoResponsiveLayout
 lib/src/theme/            KumoPalette, KumoLightPalette, KumoColors, KumoTheme, KumoTypography
 example/                  runnable gallery, routed with go_router, single-import

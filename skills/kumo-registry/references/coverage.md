@@ -12,7 +12,7 @@ another widget), **missing**, or **excluded** (deliberately not ported).
 | --- | --- | --- | --- |
 | Autocomplete | - | missing | |
 | Badge | `KumoBadge` | covered | 5 variants |
-| Banner | `KumoToast` | partial | toasts are transient; no inline banner |
+| Banner | `KumoBanner` | covered | inline and persistent; `KumoToast` stays for transient |
 | Breadcrumbs | `KumoBreadcrumb` | covered | |
 | Button | `KumoButton` | covered | 2 variants |
 | Button Group | - | missing | |
@@ -41,9 +41,9 @@ another widget), **missing**, or **excluded** (deliberately not ported).
 | Meter | `KumoMeter` | covered | added in 1.4.0 |
 | Pagination | `KumoPagination` | covered | |
 | Popover | - | missing | `KumoSelect` has an internal one |
-| Radio | - | missing | highest-value gap in the form set |
+| Radio | `KumoRadio` | covered | added in 1.5.0 |
 | Select | `KumoSelect` | covered | |
-| Sensitive Input | `KumoInput` | partial | `obscureText`, no reveal affordance |
+| Sensitive Input | `KumoSensitiveInput` | covered | `KumoInput` plus a reveal toggle |
 | Sidebar | - | missing | desktop navigation shell |
 | Skeleton Line | `KumoSkeleton` | covered | added in 1.4.0 |
 | Switch | `KumoSwitch` | covered | |
@@ -54,7 +54,7 @@ another widget), **missing**, or **excluded** (deliberately not ported).
 | Text | `KumoTypography` | covered | type scale, not a widget |
 | Toolbar | - | missing | |
 | Toast | `KumoToast` | covered | plus `KumoToastManager` |
-| Tooltip | - | missing | |
+| Tooltip | `KumoTooltip` | covered | hover on desktop, long press on touch |
 | **Scaffold** | `KumoScaffold` | kumo_ui only | no upstream equivalent |
 
 ## Charts
@@ -74,19 +74,18 @@ another widget), **missing**, or **excluded** (deliberately not ported).
 | Resource List | `KumoDataGrid` + `KumoDataCard` | partial |
 | Delete Resource | `KumoModal` | partial | a pattern, not a component |
 
-## Summary at 1.4.0
+## Summary at 1.5.0
 
-- **45 upstream components: 21 covered, 8 partial, 15 missing, 1 excluded.**
+- **45 upstream components: 25 covered, 6 partial, 13 missing, 1 excluded.**
 - `KumoScaffold` has no upstream equivalent, so it is not one of those 45.
-- `scripts/check_coverage.sh` prints `covered 30, missing 16`. The two counts
+- `scripts/check_coverage.sh` prints `covered 32, missing 14`. The two counts
   answer different questions: the script asks "does the mapped symbol still
-  exist", so it reports the 21 covered plus the 8 partial plus `KumoScaffold` as
-  30 covered, and folds the excluded logo in with the missing 15 to make 16.
+  exist", so it reports the 25 covered plus the 6 partial plus `KumoScaffold` as
+  32 covered, and folds the excluded logo in with the missing 13 to make 14.
   The summary above is the parity count.
 - Charts are absent entirely. Note that the 1.0.0 changelog claimed
   "metric blocks, and telemetry charts"; that claim was false and was corrected
   in 1.4.0.
-- The remaining gaps, roughly in value order: `Radio`, `Tooltip`, `Popover`,
-  `Table`, `Sidebar`, `Banner`, `Sensitive Input`, `InputGroup`,
-  `Layer Dialog`, `Toolbar`, `Tag Input`, `Combobox`, `Autocomplete`,
-  `Date Picker`, `Command Palette`, `Flow`, `Button Group`, `Table of Contents`.
+- The remaining gaps, roughly in value order: `Popover`, `Table`, `Sidebar`,
+  `InputGroup`, `Layer Dialog`, `Toolbar`, `Tag Input`, `Combobox`,
+  `Autocomplete`, `Date Picker`, `Command Palette`, `Flow`, `Button Group`.
