@@ -153,6 +153,14 @@ export 'src/components/kumo_toast.dart';
 export 'src/components/kumo_tooltip.dart';
 
 // ---------------------------------------------------------------------------
+// Charts
+// ---------------------------------------------------------------------------
+
+export 'src/charts/kumo_chart_controller.dart';
+export 'src/charts/kumo_lttb.dart';
+export 'src/charts/kumo_ring_buffer.dart';
+
+// ---------------------------------------------------------------------------
 // Layout helpers
 // ---------------------------------------------------------------------------
 
