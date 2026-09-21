@@ -1,13 +1,28 @@
 # kumo_ui recipes
 
-Four complete screens. Each compiles against `kumo_ui` 1.3.0 as written.
+Four complete screens. Each compiles against `kumo_ui` 1.4.0 as written.
 
-## There is no `Scaffold`
+## The screen shell
 
-The first thing a Material developer looks for. `kumo_ui` has no scaffold widget,
-because a scaffold is mostly Material's `AppBar`/`FloatingActionButton`/`SnackBar`
-machinery. A Kumo screen is composed directly, and this four-line shape is the
-convention every screen in the bundled example follows:
+`KumoScaffold` is the `Scaffold` equivalent, and it is what most screens should
+start from. It paints the canvas, insets for the system UI, keeps the body above
+the software keyboard, and gives you a pinned header, a scrolling body and an
+optional bottom bar:
+
+```dart
+KumoScaffold(
+  header: KumoHeader(title: 'Zones', subtitle: '3 active'),
+  child: KumoListGroup(children: <Widget>[...]),
+  bottomBar: KumoButton(label: 'Add zone', onPressed: () {}),
+)
+```
+
+Two things to know. Turn `scrollable` off when the content owns its own scrolling
+(a `ListView`, a `KumoDataGrid`). And the shell fills the space it is given, so it
+belongs at the root of a route, not inside an unbounded parent.
+
+Before `KumoScaffold` existed every screen repeated this shape by hand, and the
+recipes below still spell it out where they need a nested layout:
 
 ```dart
 ColoredBox(
@@ -24,8 +39,8 @@ ColoredBox(
 )
 ```
 
-Use `KumoHeader` for the title row, `KumoModal`/`KumoBottomSheet` for dialogs, and
-`KumoToastManager` for transient feedback.
+`KumoHeader` is the title row, `KumoModal` and `KumoBottomSheet` are the dialogs,
+and `KumoToastManager` is the transient feedback.
 
 ---
 

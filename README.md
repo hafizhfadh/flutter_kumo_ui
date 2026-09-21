@@ -3,7 +3,7 @@
 **A mobile-first Flutter implementation of Cloudflare's Kumo UI design system, built on `package:flutter/widgets.dart` alone.**
 
 [![pub package](https://img.shields.io/pub/v/kumo_ui.svg)](https://pub.dev/packages/kumo_ui)
-![version](https://img.shields.io/badge/version-1.3.0-F38020)
+![version](https://img.shields.io/badge/version-1.4.0-F38020)
 ![platforms](https://img.shields.io/badge/platform-android_%7C_ios_%7C_macos_%7C_linux_%7C_windows-3DDC84)
 ![web](https://img.shields.io/badge/web-not_supported-critical)
 ![flutter](https://img.shields.io/badge/flutter-widgets.dart_only-02569B)
@@ -71,7 +71,7 @@ Add the package and its icon dependency to your `pubspec.yaml`:
 dependencies:
   flutter:
     sdk: flutter
-  kumo_ui: ^1.3.0
+  kumo_ui: ^1.4.0
   phosphor_icons: ^3.0.1
 ```
 
@@ -396,8 +396,8 @@ the window `MediaQuery` instead.
 
 **Form and input**
 
-- `KumoInput` — single-line text field with label, placeholder, prefix/suffix
-  icons, obscured entry and inline error state.
+- `KumoInput` — text field with label, placeholder, prefix/suffix icons,
+  obscured entry, inline error state and multi-line mode via `maxLines`.
 - `KumoSwitch` — compact on/off toggle with a 150ms eased thumb slide.
 - `KumoCheckbox` — labelled checkbox that flips to the brand fill when checked,
   with the whole row as one 48px tap target. The box is `KumoCheckbox.boxSize`
@@ -420,6 +420,9 @@ the window `MediaQuery` instead.
 
 **Structure and layout**
 
+- `KumoScaffold` — the screen shell: canvas, system insets, keyboard avoidance,
+  a pinned `header`, a scrolling body and an optional `bottomBar`. Replaces the
+  `ColoredBox` + `SafeArea` + `SingleChildScrollView` boilerplate.
 - `KumoHeader` — section header that stacks its action under the title on
   phones and aligns it across the row on desktop.
 - `KumoListGroup` — bordered group that separates `KumoListItem` rows with 1px
@@ -449,6 +452,19 @@ the window `MediaQuery` instead.
 - `KumoBadge` — 11px monospace pill tag for metadata, plan types and status
   flags, in a `KumoBadgeVariant`: `info`, `success`, `warning`, `error` or
   `neutral`.
+
+**Feedback and primitives**
+
+- `KumoLoader` — indeterminate progress arc, drawn with a `CustomPaint` painter
+  instead of Material's indicator.
+- `KumoMeter` — determinate meter with a tone (`primary`, `success`, `warning`,
+  `danger`) and an optional label and percentage.
+- `KumoEmpty` — empty state carrying a reason and, optionally, the action that
+  fills the screen.
+- `KumoSkeleton` — static placeholder bar, or a stack of them for a text block.
+- `KumoLink` — brand-coloured text link that keeps a 48px target and activates
+  on Enter or Space.
+- `KumoLabel` — the uppercase micro label the field components paint.
 
 **Enums**
 

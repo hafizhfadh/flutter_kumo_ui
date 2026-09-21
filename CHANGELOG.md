@@ -1,3 +1,26 @@
+## 1.4.0
+
+The screen shell, plus the primitives the component set was missing.
+
+- `KumoScaffold` is the Material-free answer to `Scaffold`: it paints the
+  canvas, insets for the system UI, keeps the body above the software keyboard,
+  and gives a screen a pinned `header`, a scrolling `child` and an optional
+  `bottomBar`. It replaces the `ColoredBox` + `SafeArea` +
+  `SingleChildScrollView` boilerplate every screen was repeating.
+- Seven new widgets, closing gaps against Cloudflare's Kumo component set:
+  `KumoLoader` (indeterminate progress, drawn with `CustomPaint` rather than
+  Material's indicator), `KumoEmpty` (an empty state that names a reason and an
+  action, not just "No data"), `KumoSkeleton` (a static placeholder line),
+  `KumoLink`, `KumoLabel`, `KumoMeter` (determinate progress) and
+  `KumoInputArea`'s job.
+- `KumoInput` gained `maxLines` and `minLines`, so a multi-line area is the same
+  field rather than a near-duplicate widget. Multi-line fields align a
+  `prefixIcon` to the first line.
+- The example's settings route now uses `KumoScaffold`, and a new Primitives
+  section demonstrates the added widgets.
+- Corrected a claim in the 1.0.0 entry: it listed "metric blocks, and telemetry
+  charts", which the package has never contained.
+
 ## 1.3.0
 
 Navigator 2.0 support: `KumoApp.router`.
@@ -96,7 +119,7 @@ Developer-experience release.
 ## 1.0.0
 
 - Initial stable release of `kumo_ui`.
-- Complete component suite including inputs, navigation, responsive layouts, metric blocks, and telemetry charts.
+- Complete component suite including inputs, navigation and responsive layouts.
 
 ## 0.1.0-beta.1
 

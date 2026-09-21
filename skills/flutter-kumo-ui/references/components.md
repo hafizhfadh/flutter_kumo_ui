@@ -1,6 +1,6 @@
 # kumo_ui component reference
 
-Every public constructor in `kumo_ui` 1.3.0. Signatures are exact. `super.key` is
+Every public constructor in `kumo_ui` 1.4.0. Signatures are exact. `super.key` is
 omitted from the tables because every widget takes it.
 
 Types: `Widget`, `String`, `bool`, `Color`, `VoidCallback`, `ValueChanged<T>`,
@@ -71,9 +71,12 @@ is required when `routerConfig` is null. There is no `home`, `routes`,
 | `prefixIcon` | `Widget?` | `null` |
 | `suffixIcon` | `Widget?` | `null` |
 | `onChanged` | `ValueChanged<String>?` | `null` |
+| `maxLines` | `int?` | `1` (pass `null` to grow without limit) |
+| `minLines` | `int?` | `null` |
 
 Built on `EditableText`. Border states: resting `border`, focused `primary`, error
-`danger`. The label renders uppercased.
+`danger`. The label renders uppercased. With `maxLines` above 1 the field grows
+with its content and aligns a `prefixIcon` to the first line.
 
 ### `KumoSwitch`
 
@@ -344,6 +347,88 @@ active scheme, so a mode switch repaints live toasts.
 `KumoBadgeVariant` is `info`, `success`, `warning`, `error`, `neutral`. 11px
 monospace pill so tags of different words line up in a column. `subtleSurface`
 fill, `border` outline. The `error` variant uses `dangerText`.
+
+---
+
+## Shell
+
+### `KumoScaffold`
+
+The screen shell. Fills the space it is given, so use it at the root of a route.
+
+| Param | Type | Default |
+| --- | --- | --- |
+| `child` | `Widget` | required |
+| `header` | `Widget?` | `null` (pinned above the body) |
+| `bottomBar` | `Widget?` | `null` (pinned below the body) |
+| `padding` | `EdgeInsets` | `EdgeInsets.all(20)` |
+| `scrollable` | `bool` | `true` |
+| `safeArea` | `bool` | `true` |
+| `resizeToAvoidBottomInset` | `bool` | `true` |
+
+---
+
+## Feedback and primitives
+
+### `KumoLoader`
+
+| Param | Type | Default |
+| --- | --- | --- |
+| `size` | `double` | `20` |
+| `label` | `String?` | `null` (`'Loading'`) |
+
+Indeterminate progress, drawn with a `CustomPaint` arc. Its animation never
+settles, so a widget test must `pump()` a duration rather than `pumpAndSettle()`.
+
+### `KumoMeter`
+
+| Param | Type | Default |
+| --- | --- | --- |
+| `value` | `double` | required (clamped to `0..max`) |
+| `label` | `String?` | `null` |
+| `tone` | `KumoMeterTone` | `KumoMeterTone.primary` |
+| `max` | `double` | `1` |
+| `showValue` | `bool` | `true` |
+
+`KumoMeterTone` is `primary`, `success`, `warning`, `danger`. The fill is an
+indicator, so the tone may use the status colours; the label stays in
+`textSecondary` because it is text.
+
+### `KumoEmpty`
+
+| Param | Type | Default |
+| --- | --- | --- |
+| `title` | `String` | `'Nothing here yet'` |
+| `message` | `String?` | `null` |
+| `icon` | `PhosphorIconData` | `PhosphorIconsRegular.tray` |
+| `action` | `Widget?` | `null` |
+
+### `KumoSkeleton`
+
+| Param | Type | Default |
+| --- | --- | --- |
+| `width` | `double?` | `null` (stretches) |
+| `height` | `double` | `12` |
+| `lines` | `int` | `1` |
+| `spacing` | `double` | `8` |
+
+Static, not animated: a pulsing skeleton competes with the content it stands in
+for and makes `pumpAndSettle` unusable.
+
+### `KumoLink`
+
+| Param | Type | Default |
+| --- | --- | --- |
+| `label` | `String` | required |
+| `onPressed` | `VoidCallback?` | `null` (renders inert and muted) |
+| `icon` | `PhosphorIconData?` | `null` |
+
+### `KumoLabel`
+
+| Param | Type | Default |
+| --- | --- | --- |
+| `text` | `String` | required (positional, rendered upper-cased) |
+| `isDisabled` | `bool` | `false` |
 
 ---
 

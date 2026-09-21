@@ -33,8 +33,8 @@ token from `KumoTheme.of(context)`; it never writes a raw `Color(0x...)`.
 
 - Package imports are limited to `package:flutter/widgets.dart`,
   `package:flutter/services.dart`, `package:flutter/foundation.dart` and
-  `package:phosphor_icons/phosphor_icons.dart`. `dart:core` and `dart:async` are
-  unrestricted.
+  `package:phosphor_icons/phosphor_icons.dart`. The `dart:` libraries
+  (`dart:core`, `dart:async`, `dart:math`) are unrestricted.
   - `phosphor_flutter` is NOT usable: 2.1.0 declares
     `class PhosphorIconData extends IconData`, and `IconData` is a `final class`
     since Flutter 3.43. `phosphor_icons` is the maintained fork that fixes this.
@@ -55,7 +55,11 @@ token from `KumoTheme.of(context)`; it never writes a raw `Color(0x...)`.
 - Colour is never the only signal. Pair a status colour with text or an icon.
 - `///` dartdoc on every public class, member and parameter.
 - A new widget or behaviour ships with tests, and the bundled example
-  demonstrates it.
+  demonstrates it. The one documented exception is `KumoLoader`: its animation
+  never settles, so a screen that always shows one makes `pumpAndSettle` hang.
+- Coverage against Cloudflare's upstream component set is tracked in
+  `skills/kumo-registry/`. Consult it before adding a widget, so a new one fills
+  a real gap rather than duplicating an existing component under a new name.
 
 ## 3. Theming
 
@@ -89,7 +93,7 @@ token from `KumoTheme.of(context)`; it never writes a raw `Color(0x...)`.
 ```
 lib/kumo_ui.dart          public barrel: curated widgets.dart re-export + every component
 lib/src/kumo_app.dart     KumoApp and KumoApp.router
-lib/src/components/       the 20 widgets
+lib/src/components/       the 27 widgets
 lib/src/layout/           kKumoBreakpoint, KumoResponsiveLayout
 lib/src/theme/            KumoPalette, KumoLightPalette, KumoColors, KumoTheme, KumoTypography
 example/                  runnable gallery, routed with go_router, single-import

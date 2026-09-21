@@ -2,12 +2,15 @@ import 'package:flutter/widgets.dart';
 
 import '../theme/kumo_theme.dart';
 
-/// A single-line Kumo text field.
+/// A Kumo text field.
 ///
 /// Renders a recessed fill with a hairline outline that switches to the brand
 /// signal on focus and to the danger color when [errorMessage] is set. The
 /// field is built from [EditableText] so it stays free of Material and Cupertino
 /// dependencies.
+///
+/// Single-line by default. Raise [maxLines] for a multi-line area; the field
+/// then grows with its content and aligns any [prefixIcon] to the first line.
 class KumoInput extends StatefulWidget {
   /// Creates a Kumo text input.
   const KumoInput({
@@ -20,6 +23,8 @@ class KumoInput extends StatefulWidget {
     this.prefixIcon,
     this.suffixIcon,
     this.onChanged,
+    this.maxLines = 1,
+    this.minLines,
   });
 
   /// Micro label rendered above the field in uppercase.
@@ -47,6 +52,13 @@ class KumoInput extends StatefulWidget {
 
   /// Called each time the text changes.
   final ValueChanged<String>? onChanged;
+
+  /// Maximum visible lines. `1` is a single-line field; pass `null` to let the
+  /// field grow without limit, which is what a notes area wants.
+  final int? maxLines;
+
+  /// Minimum visible lines. Leave null to size purely from the content.
+  final int? minLines;
 
   @override
   State<KumoInput> createState() => _KumoInputState();
@@ -155,6 +167,9 @@ class _KumoInputState extends State<KumoInput> {
                   : null,
             ),
             child: Row(
+              crossAxisAlignment: widget.maxLines == 1
+                  ? CrossAxisAlignment.center
+                  : CrossAxisAlignment.start,
               children: [
                 if (widget.prefixIcon != null) ...[
                   widget.prefixIcon!,
@@ -176,7 +191,8 @@ class _KumoInputState extends State<KumoInput> {
                         backgroundCursorColor: colors.subtleSurface,
                         selectionColor: colors.primary.withValues(alpha: 0.25),
                         obscureText: widget.obscureText,
-                        maxLines: 1,
+                        maxLines: widget.maxLines,
+                        minLines: widget.minLines,
                         onChanged: widget.onChanged,
                       ),
                       if (widget.placeholder != null)
@@ -190,7 +206,7 @@ class _KumoInputState extends State<KumoInput> {
                           },
                           child: Text(
                             widget.placeholder!,
-                            maxLines: 1,
+                            maxLines: widget.maxLines,
                             overflow: TextOverflow.ellipsis,
                             style: TextStyle(
                               color: colors.textSecondary,

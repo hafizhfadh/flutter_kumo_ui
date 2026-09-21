@@ -4,7 +4,7 @@ description: Build Flutter screens with the kumo_ui package, a mobile-first impl
 license: MIT
 metadata:
   package: kumo_ui
-  version: 1.3.0
+  version: 1.4.0
   repository: https://github.com/hafizhfadh/flutter_kumo_ui
 ---
 
@@ -120,10 +120,16 @@ widget or guess a parameter name.
 
 | Area | Widgets |
 | --- | --- |
-| Form | `KumoInput`, `KumoSwitch`, `KumoCheckbox`, `KumoSelect<T>`, `KumoSegmentedControl<T>`, `KumoButton` |
-| Navigation | `KumoBreadcrumb` + `KumoBreadcrumbItem`, `KumoTabs`, `KumoPagination` |
+| Shell | `KumoScaffold` |
+| Form | `KumoInput` (single or multi-line), `KumoSwitch`, `KumoCheckbox`, `KumoSelect<T>`, `KumoSegmentedControl<T>`, `KumoButton`, `KumoLabel` |
+| Navigation | `KumoBreadcrumb` + `KumoBreadcrumbItem`, `KumoTabs`, `KumoPagination`, `KumoLink` |
 | Structure | `KumoHeader`, `KumoListGroup` + `KumoListItem`, `KumoDataGrid`, `KumoDataCard` + `KumoDataPair`, `KumoAccordion`, `KumoBottomSheet` + `KumoBottomSheetItem`, `KumoResponsiveLayout` |
-| Overlay | `KumoCodeBlock`, `KumoModal`, `KumoToast` + `KumoToastManager`, `KumoBadge` |
+| Feedback | `KumoLoader`, `KumoMeter`, `KumoEmpty`, `KumoSkeleton`, `KumoToast` + `KumoToastManager`, `KumoBadge` |
+| Overlay | `KumoCodeBlock`, `KumoModal` |
+
+Start every screen from `KumoScaffold` unless it needs a nested layout. For the
+full upstream component set and what the package still lacks, see the companion
+`kumo-registry` skill.
 
 Two are pushed through static methods rather than constructors:
 

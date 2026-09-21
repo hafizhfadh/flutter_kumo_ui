@@ -518,6 +518,25 @@ class _KumoExampleHomeState extends State<KumoExampleHome> {
                 ],
               ),
               const SizedBox(height: 28),
+              const _SectionLabel('Primitives'),
+              const KumoLabel('Field label'),
+              const SizedBox(height: 12),
+              KumoLink(
+                label: 'View the deployment logs',
+                icon: PhosphorIconsRegular.arrowUpRight,
+                onPressed: () {},
+              ),
+              const SizedBox(height: 12),
+              const KumoSkeleton(lines: 2),
+              const SizedBox(height: 12),
+              const KumoMeter(label: 'Cache hit rate', value: 0.72),
+              const SizedBox(height: 12),
+              const KumoEmpty(
+                title: 'No logs yet',
+                message: 'Requests appear here once the Worker takes traffic.',
+                icon: PhosphorIconsRegular.tray,
+              ),
+              const SizedBox(height: 28),
               const _SectionLabel('Modal'),
               KumoButton(label: 'Open dialog', icon: PhosphorIconsRegular.arrowSquareOut, onPressed: _openDialog),
               const SizedBox(height: 40),
@@ -539,46 +558,38 @@ class KumoExampleSettings extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = KumoTheme.of(context);
     final styles = KumoTheme.textStylesOf(context);
 
-    return ColoredBox(
-      color: colors.canvas,
-      child: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
+    return KumoScaffold(
+      header: KumoHeader(
+        title: 'Settings',
+        subtitle: 'Routed at /settings.',
+        leading: KumoButton(
+          label: 'Back',
+          variant: KumoButtonVariant.secondary,
+          icon: PhosphorIconsRegular.arrowLeft,
+          // A deep link can land here with nothing to pop, so fall back
+          // to the gallery instead of throwing.
+          onPressed: () => context.canPop() ? context.pop() : context.go('/'),
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: <Widget>[
+          const _SectionLabel('Notifications'),
+          const KumoListGroup(
+            title: 'Deploy alerts',
             children: <Widget>[
-              KumoHeader(
-                title: 'Settings',
-                subtitle: 'Routed at /settings.',
-                leading: KumoButton(
-                  label: 'Back',
-                  variant: KumoButtonVariant.secondary,
-                  icon: PhosphorIconsRegular.arrowLeft,
-                  // A deep link can land here with nothing to pop, so fall back
-                  // to the gallery instead of throwing.
-                  onPressed: () => context.canPop() ? context.pop() : context.go('/'),
-                ),
-              ),
-              const SizedBox(height: 28),
-              const _SectionLabel('Notifications'),
-              const KumoListGroup(
-                title: 'Deploy alerts',
-                children: <Widget>[
-                  KumoListItem(title: 'Deploy finished', subtitle: 'Push and email'),
-                  KumoListItem(title: 'Weekly digest', subtitle: 'Mondays, 09:00'),
-                ],
-              ),
-              const SizedBox(height: 28),
-              const _SectionLabel('Route'),
-              Text('This screen is a page of the same RouterConfig.', style: styles.bodyMuted),
-              const SizedBox(height: 12),
-              const KumoCodeBlock(code: "context.push('/settings')", language: 'dart'),
+              KumoListItem(title: 'Deploy finished', subtitle: 'Push and email'),
+              KumoListItem(title: 'Weekly digest', subtitle: 'Mondays, 09:00'),
             ],
           ),
-        ),
+          const SizedBox(height: 28),
+          const _SectionLabel('Route'),
+          Text('This screen is a page of the same RouterConfig.', style: styles.bodyMuted),
+          const SizedBox(height: 12),
+          const KumoCodeBlock(code: "context.push('/settings')", language: 'dart'),
+        ],
       ),
     );
   }

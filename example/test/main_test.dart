@@ -29,6 +29,7 @@ const List<String> _sectionLabels = <String>[
   'Toast',
   'Code block',
   'Palette',
+  'Primitives',
   'Modal',
 ];
 
