@@ -406,9 +406,38 @@ sheet below it.
 | `breakpoint` | `double` | `kKumoBreakpoint` |
 | `fullScreenOnMobile` | `bool` | `false` |
 
-Statics: `open(context)`, `close(context)`, `isDocked(context)`. Use `isDocked`
-to decide whether to render a menu affordance at all. Below the breakpoint the
-sheet closes on a scrim tap and on Escape, and focus moves inside while open.
+Statics: `open(context)`, `close(context)`, `isDocked(context)`,
+`hasScaffold(context)`. Use `isDocked` to decide whether to render a menu
+affordance at all. Below the breakpoint the sheet closes on a scrim tap and on
+Escape, and focus moves inside while open.
+
+`open`, `close` and `isDocked` need a context **below** the scaffold — the page
+passed as `child`, or a widget the drawer builds. A callback that closes over the
+context that *created* the scaffold is an ancestor of it and will not resolve, so
+build the drawer through a `Builder` when its rows call `close`:
+
+```dart
+KumoDrawerScaffold(
+  drawer: Builder(
+    builder: (BuildContext drawerContext) => KumoDrawer(
+      children: <Widget>[
+        KumoDrawerItem(
+          label: 'Home',
+          onTap: () {
+            KumoDrawerScaffold.close(drawerContext);
+            drawerContext.go('/');
+          },
+        ),
+      ],
+    ),
+  ),
+  child: page,
+)
+```
+
+`hasScaffold(context)` is the non-asserting probe: it separates "there is no
+scaffold" from "the scaffold is not docked", which `isDocked` cannot, and never
+asserts. A call from outside the scaffold is a debug assertion and a release no-op.
 
 ### `KumoDrawer`
 
@@ -575,7 +604,9 @@ bodyMuted, required caption, required code})`, all `TextStyle`.
 `CrossAxisAlignment`, `MainAxisSize`, `Wrap`, `Builder`); geometry and paint
 (`EdgeInsets`, `EdgeInsetsGeometry`, `Alignment`, `AlignmentGeometry`,
 `BorderRadius`, `BoxDecoration`, `Border`, `BorderSide`, `BoxShape`, `Color`,
-`ColoredBox`); text (`Text`, `TextStyle`, `TextEditingController`,
+`ColoredBox`, and the paint primitives the chart subsystem's public surface is
+built from: `Canvas`, `Paint`, `PaintingStyle`, `Path`, `Rect`, `Offset`, `Size`,
+`StrokeCap`, `StrokeJoin`); text (`Text`, `TextStyle`, `TextEditingController`,
 `TextOverflow`); scrolling (`ListView`, `SingleChildScrollView`,
 `CustomScrollView`, `SliverList`, `SliverGrid`); interaction (`GestureDetector`,
 `MouseRegion`, `Focus`, `FocusNode`, `Semantics`, `SystemMouseCursors`,

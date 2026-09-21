@@ -13,7 +13,8 @@ break by accident and expensive to debug, so it comes first.
 | Timeseries | `KumoTimeseriesChart` | streaming line and area over a sliding window |
 | Sankey | `KumoSankeyChart` | flow between stages |
 | Geo | `KumoGeoMapChart` | choropleth from GeoJSON |
-| Bespoke | `KumoChartContainer` + `KumoChartLayer` | anything else |
+| Custom | `KumoCanvas` | a bespoke visualiser drawn on a raw `Canvas` |
+| Bespoke layers | `KumoChartContainer` + `KumoChartLayer` | a chart assembled from layers you write |
 
 ## The rule: a paint body allocates nothing
 
@@ -122,7 +123,10 @@ KumoTimeseriesChart(series: series, window: window, repaint: controller);
 - `KumoTimeWindow.last(duration, endTimestamp:)` fixes the viewport. The duration
   is a viewport, not a stride: it does not change as points arrive, which is what
   lets the window slide. `slideTo` / `slideBy` move it.
-- `window.fitY(headroom:, includeZero:)` derives the value domain from the data.
+- `window.fitY(series, fromTimestamp:, toTimestamp:)` derives the value domain
+  from the data, scanning only the slice worth fitting. Headroom (`yPadding`) and
+  `includeZero` are set on the `KumoTimeWindow` itself, since they are properties
+  of the viewport rather than of one fit.
 - `KumoLttb.downsample(...)` runs inside the painter, and `maxPoints` (default
   480) is its threshold. Keep it near the plot's pixel width: LTTB keeps the
   extremes that carry the shape, but 50,000 points still cost raster time.
@@ -211,6 +215,34 @@ Unmapped canvas is filled with `colors.canvas` (the water), land with
 feature with no value gets `colors.subtleSurface`, not the bottom of the scale: a
 region with no value is not a region with a low value.
 
+## Custom canvases
+
+`KumoCanvas` is the escape hatch for a visualiser the three families do not
+cover, without surrendering the scaffolding around it:
+
+```dart
+KumoCanvas(
+  repaint: controller,                       // a KumoChartController, for ticks
+  painter: (Canvas canvas, Size size, KumoChartContext context) {
+    final Rect plot = context.geometry.plot; // the data area, after insets
+    canvas.drawPath(_path, _paint);
+  },
+)
+```
+
+The chart still owns the surface fill and outline, the plot rect, the gridlines
+and axis ticks (`showGrid`, `gridDivisions`), the resolved tokens on
+`context.colors` and `context.styles`, and the repaint split — `repaint` re-runs
+the callback without rebuilding the widget tree. There is no `background`
+parameter, because the managed grid *is* the background; `KumoCanvasGridLayer` is
+the layer it places there, exported if you want it on its own.
+
+The callback inherits the paint discipline. Declare `Paint`, `Path` and
+`TextPainter` outside it — as fields on a `State`, or above the `build` that
+returns the `KumoCanvas` — and only mutate them inside. Read tokens from
+`context`, and size geometry against `context.geometry.plot` rather than `size`,
+which includes the room reserved for axes.
+
 ## Bespoke charts
 
 For anything the three families do not cover, build layers against
@@ -225,6 +257,8 @@ Available building blocks:
 - `KumoLttb.downsample` — caller-owned arrays in, count out
 - `KumoTimeWindow` — windowing, Y-domain fitting, `projectSeries` into
   caller-owned `Float64List`s, and the `Matrix4` transforms
+- `KumoCanvas` / `KumoCanvasGridLayer` — a raw-canvas painter with the managed
+  grid, for a drawing that is not a chart of layers at all
 
 ## Common mistakes
 
@@ -240,3 +274,5 @@ Available building blocks:
 - Re-parsing GeoJSON on every build. Parse once into `KumoGeoMapData` and hold it.
 - Mutating a `KumoSankeyGraph` in place and expecting a relayout. The chart
   compares by identity; hand over a new graph.
+- Allocating inside a `KumoCanvas` painter. The escape hatch is an escape from the
+  component's opinions, not from its discipline.

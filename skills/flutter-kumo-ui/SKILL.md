@@ -4,7 +4,7 @@ description: Build Flutter screens with the kumo_ui package, a mobile-first impl
 license: MIT
 metadata:
   package: kumo_ui
-  version: 1.6.0
+  version: 1.7.0
   repository: https://github.com/hafizhfadh/flutter_kumo_ui
 ---
 
@@ -34,7 +34,7 @@ Also hard:
 dependencies:
   flutter:
     sdk: flutter
-  kumo_ui: ^1.3.0
+  kumo_ui: ^1.7.0
   phosphor_icons: ^3.0.1   # where the Phosphor glyph constants live
 ```
 
@@ -216,7 +216,8 @@ letting it ship.
 
 The package ships a pure-Dart chart subsystem under `lib/src/charts/`, with no
 chart package underneath: `KumoTimeseriesChart`, `KumoSankeyChart` and
-`KumoGeoMapChart`, plus `KumoChartContainer` for anything else.
+`KumoGeoMapChart`, plus `KumoCanvas` for a bespoke drawing on a raw `Canvas`, and
+`KumoChartContainer` for a chart assembled from layers you write.
 
 Read [references/charts.md](references/charts.md) before writing any chart. The
 one rule that matters most: a `paint` body allocates nothing, because everything
@@ -225,8 +226,8 @@ it needs is built in `prepare()` once per layout.
 ## Reference files
 
 - [references/charts.md](references/charts.md) - the chart subsystem: the layer
-  contract, the repaint split, `KumoChartColors`, and the timeseries, Sankey and
-  GeoJSON families.
+  contract, the repaint split, `KumoChartColors`, the `KumoCanvas` escape hatch,
+  and the timeseries, Sankey and GeoJSON families.
 - [references/components.md](references/components.md) - every public constructor,
   parameter, default, enum and static service.
 - [references/theming.md](references/theming.md) - both raw palettes, the semantic

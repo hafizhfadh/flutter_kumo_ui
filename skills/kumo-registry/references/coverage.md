@@ -61,10 +61,10 @@ another widget), **missing**, or **excluded** (deliberately not ported).
 
 | Upstream | kumo_ui | Status |
 | --- | --- | --- |
-| Timeseries | - | missing |
-| Maps | - | missing |
-| Sankey | - | missing |
-| Custom Chart | - | missing |
+| Timeseries | `KumoTimeseriesChart` | kumo_ui only |
+| Maps | `KumoGeoMapChart` | kumo_ui only |
+| Sankey | `KumoSankeyChart` | kumo_ui only |
+| Custom Chart | `KumoCanvas` | kumo_ui only |
 
 ## Blocks
 
@@ -74,7 +74,7 @@ another widget), **missing**, or **excluded** (deliberately not ported).
 | Resource List | `KumoDataGrid` + `KumoDataCard` | partial |
 | Delete Resource | `KumoModal` | partial | a pattern, not a component |
 
-## Summary at 1.6.0
+## Summary at 1.7.0
 
 - **45 upstream components: 26 covered, 6 partial, 12 missing, 1 excluded.**
 - `KumoScaffold` has no upstream equivalent, so it is not one of those 45.
@@ -89,9 +89,13 @@ another widget), **missing**, or **excluded** (deliberately not ported).
   and a drawer sheet below the breakpoint, with a scrim, Escape to close and
   focus moved inside. The collapsible sub-menus, resizing, peeking and sliding
   views are not ported.
-- Charts are absent entirely. Note that the 1.0.0 changelog claimed
-  "metric blocks, and telemetry charts"; that claim was false and was corrected
-  in 1.4.0.
+- Charts are not upstream components: Kumo renders its charts in React, and this
+  package has no Flutter Web target, so the subsystem is a `kumo_ui`-only
+  addition rather than a port. It is pure Dart over `CustomPainter` — no chart
+  package underneath — and ships `KumoTimeseriesChart`, `KumoSankeyChart`,
+  `KumoGeoMapChart` and the `KumoCanvas` escape hatch. Note that the 1.0.0
+  changelog claimed "metric blocks, and telemetry charts"; that claim was false
+  for the released package and was corrected in 1.4.0.
 - The remaining gaps, roughly in value order: `Popover`, `Table`, `InputGroup`,
   `Layer Dialog`, `Toolbar`, `Tag Input`, `Combobox`, `Autocomplete`,
   `Date Picker`, `Command Palette`, `Flow`, `Button Group`.

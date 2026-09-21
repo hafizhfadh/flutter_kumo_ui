@@ -3,7 +3,7 @@
 **A mobile-first Flutter implementation of Cloudflare's Kumo UI design system, built on `package:flutter/widgets.dart` alone.**
 
 [![pub package](https://img.shields.io/pub/v/kumo_ui.svg)](https://pub.dev/packages/kumo_ui)
-![version](https://img.shields.io/badge/version-1.6.0-F38020)
+![version](https://img.shields.io/badge/version-1.7.0-F38020)
 ![platforms](https://img.shields.io/badge/platform-android_%7C_ios_%7C_macos_%7C_linux_%7C_windows-3DDC84)
 ![web](https://img.shields.io/badge/web-not_supported-critical)
 ![flutter](https://img.shields.io/badge/flutter-widgets.dart_only-02569B)
@@ -71,7 +71,7 @@ Add the package and its icon dependency to your `pubspec.yaml`:
 dependencies:
   flutter:
     sdk: flutter
-  kumo_ui: ^1.6.0
+  kumo_ui: ^1.7.0
   phosphor_icons: ^3.0.1
 ```
 
@@ -92,7 +92,8 @@ Flutter primitives it is itself built from, grouped as:
   `MainAxisSize`, `Builder`.
 - **Geometry, paint and insets** — `EdgeInsets`, `EdgeInsetsGeometry`,
   `Alignment`, `BorderRadius`, `BoxDecoration`, `Border`, `BorderSide`,
-  `BoxShape`, `Color`, `ColoredBox`.
+  `BoxShape`, `Color`, `ColoredBox`, `Canvas`, `Paint`, `PaintingStyle`, `Path`,
+  `Rect`, `Offset`, `Size`, `StrokeCap`, `StrokeJoin`.
 - **Text** — `Text`, `TextStyle`, `TextEditingController`, `TextOverflow`.
 - **Scrolling** — `ListView`, `SingleChildScrollView`, `CustomScrollView`,
   `SliverList`, `SliverGrid`.
@@ -117,6 +118,11 @@ Two things worth knowing about those re-exports:
 - **It is a curated subset, not the whole of `widgets.dart`.** If you reach for
   something outside it, add `package:flutter/widgets.dart` yourself — the
   compiler will point at the missing name immediately.
+
+The paint primitives are in the list because the chart subsystem's public surface
+is built from them: a `KumoChartLayer` is a `CustomPainter`, and a `KumoCanvas`
+painter is handed a raw `Canvas`, so drawing your own chart needs `Canvas`,
+`Paint`, `Path`, `Rect` and `Offset` from the same single import.
 
 The Phosphor glyph constants still come from `phosphor_icons`, since that is
 where the icon names are declared:
@@ -405,8 +411,20 @@ KumoTimeseriesChart(series: series, window: window, repaint: controller);
 ```
 
 Three families ship — `KumoTimeseriesChart`, `KumoSankeyChart` and
-`KumoGeoMapChart` — plus `KumoChartContainer` for anything else. See
-[the chart reference](skills/flutter-kumo-ui/references/charts.md).
+`KumoGeoMapChart` — plus `KumoChartContainer` and `KumoCanvas` for anything else.
+`KumoCanvas` is the drawing escape hatch: it manages the surface, the gridlines,
+the tokens and the repaint split, and hands you a raw `Canvas`.
+
+```dart
+KumoCanvas(
+  repaint: controller,
+  painter: (Canvas canvas, Size size, KumoChartContext context) {
+    canvas.drawPath(myPath, myPaint);   // context.geometry.plot is the data area
+  },
+)
+```
+
+See [the chart reference](skills/flutter-kumo-ui/references/charts.md).
 
 ## Component catalog
 
@@ -434,6 +452,11 @@ Three families ship — `KumoTimeseriesChart`, `KumoSankeyChart` and
   switching between sibling views.
 - `KumoButton` — action with a 48px touch target and optional Phosphor icon,
   in a `KumoButtonVariant`: `primary` (brand fill) or `secondary` (outlined).
+- `KumoRadio<T>` — mutually exclusive choice that deliberately mirrors
+  `KumoCheckbox`: an 18px control, the whole row as one 48px tap target, the
+  brand signal when chosen. Compare `value` with `groupValue` yourself.
+- `KumoSensitiveInput` — a secret the user has to paste and verify, so it adds
+  the one thing `KumoInput` alone cannot give it: a reveal toggle.
 
 **Navigation**
 
@@ -443,6 +466,16 @@ Three families ship — `KumoTimeseriesChart`, `KumoSankeyChart` and
 - `KumoTabs` — tab bar with a 2px brand indicator under the active tab.
 - `KumoPagination` — Prev/Next switcher with a monospace `Page X of Y`
   indicator.
+- `KumoDrawerScaffold` — the navigation shell: a `KumoDrawer` docked beside the
+  page at or above `kKumoBreakpoint`, or a slide-over sheet with a scrim below
+  it, closing on Escape with focus moved inside. `open`, `close`, `isDocked` and
+  `hasScaffold` are statics, and the first three need a context **below** the
+  scaffold — build the drawer through a `Builder` when its rows call `close`.
+- `KumoDrawer` — the panel itself: an optional pinned header and footer around a
+  scrollable nav area, and an icon-only collapsed rail.
+- `KumoDrawerItem` — one 48px nav row carrying `Semantics(selected:)`, so the
+  current destination is announced rather than only painted.
+  `KumoDrawerGroup` labels a run of them.
 
 **Structure and layout**
 
@@ -463,6 +496,10 @@ Three families ship — `KumoTimeseriesChart`, `KumoSankeyChart` and
 - `KumoBottomSheet` — bottom-anchored surface pushed with
   `KumoBottomSheet.show<T>(…)`, for touch-first choices. Its rows are
   `KumoBottomSheetItem`s at a full 48px tap height.
+- `KumoDataGridScope` — internal plumbing shared by `KumoDataGrid` and
+  `KumoDataCard`: it tells a card it is a grid cell so it drops its own outline
+  rather than doubling the divider. Exported because Dart has no
+  package-private, not because you should reach for it.
 
 **Content and overlay**
 
@@ -491,13 +528,65 @@ Three families ship — `KumoTimeseriesChart`, `KumoSankeyChart` and
 - `KumoLink` — brand-coloured text link that keeps a 48px target and activates
   on Enter or Space.
 - `KumoLabel` — the uppercase micro label the field components paint.
+- `KumoTooltip` — message on hover or long press, placed `top` (the default) or
+  `bottom` of its child, leaving the child's own tap behaviour alone.
+- `KumoFocusable` — the focus-ring, Enter/Space activation and hit-cursor wrapper
+  every interactive component here is built from. Reach for it to give a custom
+  control the same contract.
+
+**Charts**
+
+- `KumoChartContainer` — the chart surface. It takes a static `background` layer
+  and a repaint-driven `foreground` layer and splits them, so a data tick
+  repaints the dynamic layer only and the grid rasterises once per layout.
+  `KumoChartLayer` is the base class: `prepare()` runs once per layout and owns
+  every `Paint` and `Path`, so `paint()` allocates nothing. `KumoChartGeometry`
+  and `KumoChartContext` carry the plot rect, the resolved tokens and the repaint
+  listenable into a layer.
+- `KumoCanvas` — the escape hatch for anything the families do not cover: a
+  `KumoCanvasPainter` callback taking a raw `Canvas`, the surface `Size` and a
+  pre-computed `KumoChartContext`, with the surface, plot rect, gridlines, axis
+  ticks and repaint split managed around it. `KumoCanvasGridLayer` is the grid it
+  draws behind you.
+- `KumoTimeseriesChart` — streaming line and area over a sliding window.
+  `KumoSeriesBuffer` is fixed-capacity point storage that never allocates on
+  append; `KumoTimeWindow` is the pure-Dart viewport, with `Matrix4` transforms
+  and caller-buffer projection; `KumoLttb` downsamples to the plot's pixel width
+  while keeping the peaks.
+- `KumoSankeyChart` — flow between stages, laid out by `KumoSankeySolver` from a
+  `KumoSankeyGraph` of `KumoSankeyNode`s and `KumoSankeyLink`s. The solver is
+  usable on its own — it writes into caller-owned `KumoSankeyNodeLayout` and
+  `KumoSankeyLinkLayout` structs — and it terminates on cycles rather than
+  hanging.
+- `KumoGeoMapChart` — choropleth from GeoJSON, together with
+  `KumoGeoJsonParser` (a decoded `Map` into a `KumoGeoMapData` of
+  `KumoGeoFeature`s), `KumoGeoProjection` / `KumoGeoProjectionKind` (`mercator`
+  or `equirectangular`), `KumoGeoBounds` and `KumoGeoProjector`.
+- `KumoChartColors` — the chart palette: semantic status tones, a five-slot
+  categorical cycle and a sequential ramp. Kept outside `KumoColors` because it
+  is scheme-independent, so a series reads the same in light and dark.
+- `KumoChartController`, `KumoDataBuffer`, `KumoRingBuffer` and
+  `KumoStreamingChartSource` — the streaming path. Fixed-capacity rings plus one
+  coalesced flush per frame mean a fast socket cannot become a fast rebuild. Hand
+  a controller to a chart's `repaint` and a tick repaints the layer instead of
+  the widget.
+- The layer classes are public, so a chart can be composed and not only
+  configured: `KumoTimeseriesBackgroundLayer` / `KumoTimeseriesForegroundLayer`,
+  `KumoSankeyBackgroundLayer` / `KumoSankeyForegroundLayer` and
+  `KumoGeoMapLayer`. `KumoChartLayerBuilder`, `KumoCanvasPainter`,
+  `KumoAxisLabelBuilder` and `KumoFlushScheduler` are the callback typedefs those
+  pieces take.
 
 **Enums**
 
 - `KumoButtonVariant` — `primary`, `secondary`.
 - `KumoBadgeVariant` — `info`, `success`, `warning`, `error`, `neutral`.
+- `KumoBannerKind` — `info`, `success`, `warning`, `error`.
 - `KumoToastKind` — `info`, `success`, `warning`, `error`.
+- `KumoMeterTone` — `primary`, `success`, `warning`, `danger`.
+- `KumoTooltipPlacement` — `top`, `bottom`.
 - `KumoThemeMode` — `system`, `light`, `dark`.
+- `KumoGeoProjectionKind` — `mercator`, `equirectangular`.
 
 **Theming**
 
@@ -615,8 +704,10 @@ underneath, documented in
   `KumoSeriesBuffer` and LTTB downsampling
 - [x] Sankey — `KumoSankeyChart`, on `KumoSankeySolver`
 - [x] Maps — `KumoGeoMapChart`, with `KumoGeoJsonParser` and `KumoGeoProjection`
-- [ ] Custom Chart — `KumoChartContainer` and `KumoChartLayer` are the escape
-  hatch today; a dedicated canvas widget is not built yet
+- [x] Custom Chart — `KumoCanvas` is the composable escape hatch: a painter
+  callback handed a raw `Canvas`, with the gridlines, axis ticks, tokens and
+  repaint split managed around it. `KumoChartContainer` and `KumoChartLayer`
+  remain the layer-level route for a chart assembled from layers.
 
 **Deliberately excluded**
 
@@ -631,14 +722,23 @@ underneath, documented in
 ## Example
 
 A runnable showcase lives in [`example/`](example/lib/main.dart). It exercises the
-component set at a phone and a desktop viewport. The chart subsystem and
-`KumoDrawerScaffold` are not demonstrated there yet, so the API references above
-are what to build from until they are.
+component set at a phone and a desktop viewport, and it demonstrates the chart
+subsystem and the drawer shell.
 
-The root is a single `KumoApp.router` driving a go_router `RouterConfig`, with a
-`/` gallery and a `/settings` screen, so the theme, router and
-platform-brightness wiring all live in one place. It imports `kumo_ui`,
-`phosphor_icons` and `go_router`, and nothing else.
+The root is a single `KumoApp.router` driving a go_router `RouterConfig`. A
+`ShellRoute` wraps every page in a `KumoDrawerScaffold` — a docked rail on a wide
+window, a sheet over the page on a narrow one — and the drawer's highlight is
+derived from the active route path, so navigation and the drawer cannot disagree:
+
+- `/overview` — the component gallery
+- `/charts/timeseries` — a live series fed by a simulated socket, streaming
+  through `KumoChartController` into `KumoTimeseriesChart`
+- `/charts/sankey` — `KumoSankeyChart` next to the `KumoSankeySolver` readout
+- `/charts/geomap` — `KumoGeoMapChart` over a synthetic choropleth
+- `/charts/custom` — a bespoke visualiser drawn with `KumoCanvas`
+- `/settings` — a second-level route, pushed onto the same router
+
+It imports `kumo_ui`, `phosphor_icons` and `go_router`, and nothing else.
 
 The **System / Light / Dark** selector switches the scheme live by changing
 `KumoApp.mode`. Because a route builder does not re-run when the app rebuilds,
