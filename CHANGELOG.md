@@ -1,3 +1,56 @@
+## 1.7.0
+
+A pure-Dart chart subsystem, under `lib/src/charts/` and exported from the
+barrel: no charting package, no `WebView`, and no `paint` body that allocates.
+
+- `KumoChartContainer` is the surface, and the reason a streaming chart keeps up
+  with its data: a tick repaints only the dynamic layer. The background grid sits
+  behind its own `RepaintBoundary` on a context whose `repaint` is null, so it
+  rasterises once per layout rather than once per frame, and a tick does not
+  rebuild the widget tree — `CustomPainter.repaint` drives it. `KumoChartLayer`
+  is the layer contract: allocate in `prepare()` (once per layout), only mutate
+  in `paint()`.
+- `KumoTimeseriesChart` streams a line and an area over a sliding window.
+  `KumoSeriesBuffer` holds points in two `Float64List`s read through a start
+  offset, so an append never allocates and a wrap never copies. `KumoTimeWindow`
+  is the viewport and is pure Dart — no canvas, no `BuildContext`, no widgets —
+  so a slide is a `Matrix4` translation rather than a reprojection of history.
+  `KumoLttb` downsamples to the plot's pixel width, keeping the extremes that
+  carry the shape, and every array it touches is caller-owned.
+- `KumoSankeyChart` lays a flow network out with `KumoSankeySolver`: longest-path
+  depths via Kahn's algorithm, so a cycle terminates instead of hanging, and one
+  shared vertical scale per column, so a node cannot overlap its neighbour.
+  Dangling endpoints drop their ribbon rather than throwing.
+- `KumoGeoMapChart` draws a choropleth from GeoJSON. `KumoGeoJsonParser` reads an
+  already-decoded `Map`, so the package takes no position on how the bytes
+  arrived; `KumoGeoProjection` flattens the globe into a unit square; and paths
+  are compiled once in **world** coordinates, which makes a pan, a zoom and a
+  resize one matrix over geometry that is never rebuilt.
+- `KumoCanvas` is the escape hatch for anything the families do not cover: a
+  painter callback handed a raw `Canvas`, with the surface, the plot rect, the
+  gridlines and axis ticks, the resolved tokens and the repaint split managed
+  around it. `KumoCanvasGridLayer` is the grid it places behind you.
+- `KumoChartColors` is the chart palette, deliberately outside `KumoColors` so a
+  series reads the same in both schemes: semantic status tones, a five-slot
+  categorical cycle, and a sequential ramp whose dark-mode order is reversed so
+  the most prominent step is always the largest value.
+- `KumoRingBuffer`, `KumoDataBuffer`, `KumoChartController` and
+  `KumoStreamingChartSource` coalesce a burst of socket messages into one flush
+  per frame, with backpressure that keeps the newest points rather than the
+  oldest.
+- `KumoDrawerScaffold`'s static lookups no longer dereference a missing scope. A
+  context outside the scaffold asserts in debug with a message that names the
+  cause (a callback closing over the context that created the scaffold) and the
+  fix, and is a no-op in release instead of throwing a bare null-check. The new
+  `KumoDrawerScaffold.hasScaffold` is the non-asserting probe, which separates
+  "there is no scaffold" from "the scaffold is not docked".
+- The barrel re-exports the paint primitives the chart surface is built from
+  (`Canvas`, `Paint`, `PaintingStyle`, `Path`, `Rect`, `Offset`, `Size`,
+  `StrokeCap`, `StrokeJoin`), so drawing your own chart is still one import.
+- The bundled example is now a `ShellRoute` app: a `KumoDrawerScaffold` around
+  every page, a deep-linkable route per chart family, and a live timeseries fed
+  by a simulated socket whose buffer outlives the route that draws it.
+
 ## 1.6.0
 
 `KumoDrawerScaffold`, covering upstream's `Sidebar`. Coverage moves to 26 of 45.
