@@ -76,12 +76,13 @@ another widget), **missing**, or **excluded** (deliberately not ported).
 
 ## Summary at 1.4.0
 
-- 44 upstream components: **21 covered**, **9 partial**, **13 missing**,
-  1 excluded.
-- `scripts/check_coverage.sh` prints `covered 27, missing 19`. It counts a
-  mapping as covered when the mapped symbol exists, so it reports 21 covered plus
-  9 partial as 27. The two numbers answer different questions: the script asks
-  "does the symbol still exist", the summary asks "is it at parity".
+- **45 upstream components: 21 covered, 8 partial, 15 missing, 1 excluded.**
+- `KumoScaffold` has no upstream equivalent, so it is not one of those 45.
+- `scripts/check_coverage.sh` prints `covered 30, missing 16`. The two counts
+  answer different questions: the script asks "does the mapped symbol still
+  exist", so it reports the 21 covered plus the 8 partial plus `KumoScaffold` as
+  30 covered, and folds the excluded logo in with the missing 15 to make 16.
+  The summary above is the parity count.
 - Charts are absent entirely. Note that the 1.0.0 changelog claimed
   "metric blocks, and telemetry charts"; that claim was false and was corrected
   in 1.4.0.

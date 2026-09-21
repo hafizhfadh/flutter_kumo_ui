@@ -519,6 +519,80 @@ the window `MediaQuery` instead.
   styles, carrying the dark tones.
 - `kKumoBreakpoint` — the shared 600px mobile/desktop switchover point.
 
+## Component checklist
+
+Coverage against Cloudflare's upstream
+[Kumo component set](https://kumo-ui.com/components). `[x]` means this package
+ships a Flutter equivalent; `[ ]` means it does not yet. The same list, with a
+drift check, lives in
+[`skills/kumo-registry/`](skills/kumo-registry/references/coverage.md).
+
+**Implemented — 21 of 45**
+
+- [x] Badge — `KumoBadge`
+- [x] Breadcrumbs — `KumoBreadcrumb`
+- [x] Button — `KumoButton`
+- [x] Checkbox — `KumoCheckbox`
+- [x] Collapsible — `KumoAccordion`
+- [x] Dialog — `KumoModal`
+- [x] Dropdown — `KumoSelect`
+- [x] Empty — `KumoEmpty`
+- [x] Input — `KumoInput`
+- [x] InputArea — `KumoInput(maxLines: n)`
+- [x] Label — `KumoLabel`
+- [x] Link — `KumoLink`
+- [x] Loader — `KumoLoader`
+- [x] Meter — `KumoMeter`
+- [x] Pagination — `KumoPagination`
+- [x] Select — `KumoSelect`
+- [x] Skeleton Line — `KumoSkeleton`
+- [x] Switch — `KumoSwitch`
+- [x] Tabs — `KumoTabs`
+- [x] Text — `KumoTypography`
+- [x] Toast — `KumoToast`
+
+**Partial — 8** — the capability exists inside another widget rather than as one
+of its own:
+
+- [x] Banner — `KumoToast` is transient only, there is no inline banner
+- [x] Clipboard Text — the `KumoCodeBlock` copy action
+- [x] CodeHighlighted — `KumoCodeBlock` renders monospace, with no highlighting
+- [x] Grid — `KumoDataGrid` is a card grid, not a general layout grid
+- [x] Inline Copy Text — the `KumoCodeBlock` copy action
+- [x] Layer Card — `KumoDataCard` is a resource card, not a general layer
+- [x] Sensitive Input — `KumoInput(obscureText: true)`, with no reveal affordance
+- [x] Table — `KumoDataGrid` lays out cards, not a true data table
+
+**Not implemented — 15**
+
+- [ ] Autocomplete
+- [ ] Button Group
+- [ ] Combobox
+- [ ] Command Palette
+- [ ] Date Picker
+- [ ] Flow
+- [ ] InputGroup
+- [ ] Layer Dialog
+- [ ] Popover
+- [ ] Radio
+- [ ] Sidebar
+- [ ] Table of Contents
+- [ ] Tag Input
+- [ ] Toolbar
+- [ ] Tooltip
+
+**Charts** — Timeseries, Maps, Sankey and Custom Chart are absent entirely.
+
+**Deliberately excluded**
+
+- [ ] Cloudflare Logo — this package is unaffiliated and ships no Cloudflare
+  marks.
+
+**Beyond upstream**
+
+- [x] `KumoScaffold` — the screen shell. Kumo has no scaffold equivalent, so it
+  is not one of the 45 above.
+
 ## Example
 
 A runnable showcase lives in [`example/`](example/lib/main.dart). It exercises
