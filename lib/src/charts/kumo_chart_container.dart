@@ -202,7 +202,7 @@ class KumoChartContainer extends StatelessWidget {
                   if (backgroundBuilder != null)
                     RepaintBoundary(
                       child: CustomPaint(
-                        painter: backgroundBuilder(base),
+                        painter: backgroundBuilder(base)..prepare(),
                         size: geometry.size,
                       ),
                     ),
@@ -210,7 +210,7 @@ class KumoChartContainer extends StatelessWidget {
                   // dirty an ancestor layer either.
                   RepaintBoundary(
                     child: CustomPaint(
-                      painter: foreground(base.withRepaint(repaint)),
+                      painter: foreground(base.withRepaint(repaint))..prepare(),
                       size: geometry.size,
                     ),
                   ),

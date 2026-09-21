@@ -156,11 +156,14 @@ export 'src/components/kumo_tooltip.dart';
 // Charts
 // ---------------------------------------------------------------------------
 
+export 'src/charts/kumo_chart_colors.dart';
 export 'src/charts/kumo_chart_container.dart';
 export 'src/charts/kumo_chart_controller.dart';
 export 'src/charts/kumo_lttb.dart';
 export 'src/charts/kumo_ring_buffer.dart';
 export 'src/charts/timeseries/kumo_time_window.dart';
+export 'src/charts/timeseries/kumo_timeseries_chart.dart';
+export 'src/charts/timeseries/kumo_timeseries_painter.dart';
 
 // ---------------------------------------------------------------------------
 // Layout helpers
