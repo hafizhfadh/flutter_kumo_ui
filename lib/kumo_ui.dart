@@ -64,6 +64,19 @@ export 'package:flutter/widgets.dart'
         BoxShape,
         Color,
         ColoredBox,
+        // Paint primitives. Exported because the chart subsystem's public
+        // surface is built from them: a KumoChartLayer is a CustomPainter, and
+        // a KumoCanvas painter receives a raw Canvas, so a single-import
+        // consumer cannot build one without these.
+        Canvas,
+        Paint,
+        PaintingStyle,
+        Path,
+        Rect,
+        Offset,
+        Size,
+        StrokeCap,
+        StrokeJoin,
         // Text
         Text,
         TextStyle,
@@ -156,6 +169,7 @@ export 'src/components/kumo_tooltip.dart';
 // Charts
 // ---------------------------------------------------------------------------
 
+export 'src/charts/kumo_canvas.dart';
 export 'src/charts/kumo_chart_colors.dart';
 export 'src/charts/kumo_chart_container.dart';
 export 'src/charts/kumo_chart_controller.dart';

@@ -168,6 +168,131 @@ void main() {
     });
   });
 
+  group('KumoDrawerScaffold scope lookup', () {
+    testWidgets('drawer rows built with their own context can close it', (
+      tester,
+    ) async {
+      // The drawer is built by a `Builder`, so its rows capture a context below
+      // the scaffold. This is the wiring the class documents, and the one a
+      // callback closing over the creating context gets wrong.
+      await tester.pumpWidget(
+        _host(
+          KumoDrawerScaffold(
+            drawer: Builder(
+              builder: (BuildContext drawerContext) => KumoDrawer(
+                children: <Widget>[
+                  KumoDrawerItem(
+                    label: 'Home',
+                    onTap: () => KumoDrawerScaffold.close(drawerContext),
+                  ),
+                ],
+              ),
+            ),
+            child: Builder(
+              builder: (BuildContext context) => KumoButton(
+                label: 'Menu',
+                onPressed: () => KumoDrawerScaffold.open(context),
+              ),
+            ),
+          ),
+          width: 400,
+        ),
+      );
+
+      await tester.tap(find.text('Menu'));
+      await tester.pumpAndSettle();
+      expect(find.text('Home'), findsOneWidget);
+
+      await tester.tap(find.text('Home'));
+      await tester.pumpAndSettle();
+      expect(find.text('Home'), findsNothing);
+      expect(tester.takeException(), isNull);
+    });
+
+    testWidgets('a context above the scaffold asserts with a fix, not a crash', (
+      tester,
+    ) async {
+      late BuildContext creatingContext;
+      await tester.pumpWidget(
+        _host(
+          Builder(
+            builder: (BuildContext context) {
+              creatingContext = context;
+              return KumoDrawerScaffold(
+                drawer: _drawer(),
+                child: const Text('Page'),
+              );
+            },
+          ),
+        ),
+      );
+
+      // The builds that create the scaffold, its drawer and its page are all
+      // ancestors of the scope, so their contexts are not descendants and the
+      // lookup fails. It fails with an explanation rather than a bare
+      // null-check, which is what the old `scope!` produced in a release build.
+      expect(
+        () => KumoDrawerScaffold.close(creatingContext),
+        throwsA(
+          isA<AssertionError>().having(
+            (AssertionError error) => error.message,
+            'message',
+            allOf(
+              contains('KumoDrawerScaffold'),
+              contains('Builder'),
+              contains('hasScaffold'),
+            ),
+          ),
+        ),
+      );
+      expect(
+        () => KumoDrawerScaffold.open(creatingContext),
+        throwsA(isA<AssertionError>()),
+      );
+    });
+
+    testWidgets('hasScaffold reports absence without asserting', (
+      tester,
+    ) async {
+      bool? outside;
+      bool? inside;
+
+      await tester.pumpWidget(
+        _host(
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: <Widget>[
+              Builder(
+                builder: (BuildContext context) {
+                  outside = KumoDrawerScaffold.hasScaffold(context);
+                  return const SizedBox.shrink();
+                },
+              ),
+              SizedBox(
+                height: 400,
+                child: KumoDrawerScaffold(
+                  drawer: _drawer(),
+                  child: Builder(
+                    builder: (BuildContext context) {
+                      inside = KumoDrawerScaffold.hasScaffold(context);
+                      return const Text('Page');
+                    },
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+
+      // `isDocked` cannot tell "not docked" from "no scaffold at all", which is
+      // the whole reason the non-asserting probe exists.
+      expect(outside, isFalse);
+      expect(inside, isTrue);
+      expect(tester.takeException(), isNull);
+    });
+  });
+
   group('KumoDrawer', () {
     testWidgets('paints the selected row with the recessed fill', (
       tester,

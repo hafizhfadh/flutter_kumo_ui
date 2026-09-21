@@ -33,6 +33,39 @@ import 'kumo_drawer.dart';
 ///   ),
 /// )
 /// ```
+///
+/// ## The `context` these statics need
+///
+/// Both `drawer` and `child` are built as descendants of the scope this widget
+/// publishes, so any context from inside either one reaches [open], [close] and
+/// [isDocked]. What does *not* reach them is the context of the build that
+/// **created** this widget — that one is an ancestor of the scope.
+///
+/// That distinction bites when a callback closes over an outer context. Building
+/// the drawer with a context of its own is what fixes it, because then the rows'
+/// callbacks are descendants:
+///
+/// ```dart
+/// KumoDrawerScaffold(
+///   // A Builder gives the rows a context below the scaffold, so
+///   // `KumoDrawerScaffold.close` resolves. Closing over the enclosing
+///   // context would not.
+///   drawer: Builder(
+///     builder: (BuildContext drawerContext) => KumoDrawer(
+///       children: <Widget>[
+///         KumoDrawerItem(
+///           label: 'Home',
+///           onTap: () {
+///             KumoDrawerScaffold.close(drawerContext);
+///             drawerContext.go('/');
+///           },
+///         ),
+///       ],
+///     ),
+///   ),
+///   child: page,
+/// )
+/// ```
 class KumoDrawerScaffold extends StatefulWidget {
   /// Creates an adaptive drawer layout.
   const KumoDrawerScaffold({
@@ -57,21 +90,51 @@ class KumoDrawerScaffold extends StatefulWidget {
   final bool fullScreenOnMobile;
 
   /// Opens the drawer. Does nothing when it is already docked.
-  static void open(BuildContext context) => _scopeOf(context).open();
+  ///
+  /// [context] must be a descendant of this widget — see the note on the class.
+  /// A call from outside the scaffold is a no-op in a release build and an
+  /// assertion failure in debug.
+  static void open(BuildContext context) => _scopeOrNull(context)?.open();
 
   /// Closes the drawer. Harmless when it is docked.
-  static void close(BuildContext context) => _scopeOf(context).close();
+  ///
+  /// [context] must be a descendant of this widget — see the note on the class.
+  static void close(BuildContext context) => _scopeOrNull(context)?.close();
 
   /// Whether the drawer is docked rather than hidden behind a menu action.
   ///
-  /// Use it to decide whether to render a menu affordance at all.
-  static bool isDocked(BuildContext context) => _scopeOf(context).isDocked;
+  /// Use it to decide whether to render a menu affordance at all. Answers
+  /// `false` when no [KumoDrawerScaffold] encloses [context]; pair it with
+  /// [hasScaffold] when the caller may be rendered outside one, because this
+  /// lookup asserts on a missing scaffold in debug.
+  static bool isDocked(BuildContext context) =>
+      _scopeOrNull(context)?.isDocked ?? false;
 
-  static _KumoDrawerScope _scopeOf(BuildContext context) {
-    final _KumoDrawerScope? scope =
-        context.dependOnInheritedWidgetOfExactType<_KumoDrawerScope>();
-    assert(scope != null, 'No KumoDrawerScaffold above this widget.');
-    return scope!;
+  /// Whether a [KumoDrawerScaffold] encloses [context].
+  ///
+  /// The non-asserting probe, for a widget that may be rendered either inside or
+  /// outside a shell. [isDocked] answers a different question — "is the drawer
+  /// showing permanently?" — and cannot distinguish `false` from absent.
+  static bool hasScaffold(BuildContext context) => _findScope(context) != null;
+
+  static _KumoDrawerScope? _findScope(BuildContext context) =>
+      context.dependOnInheritedWidgetOfExactType<_KumoDrawerScope>();
+
+  static _KumoDrawerScope? _scopeOrNull(BuildContext context) {
+    final _KumoDrawerScope? scope = _findScope(context);
+    assert(
+      scope != null,
+      'KumoDrawerScaffold was looked up from a context with no '
+      'KumoDrawerScaffold above it.\n'
+      'The context has to be a descendant of the scaffold — normally the page '
+      'passed as `child`, or a widget built by the drawer.\n'
+      'The usual cause is a callback that closed over the build context that '
+      'CREATED the scaffold, which is an ancestor of it. Wrap that widget in a '
+      'Builder so its callbacks capture a context of their own. Call '
+      'KumoDrawerScaffold.hasScaffold(context) first if the widget may also be '
+      'rendered outside a scaffold.',
+    );
+    return scope;
   }
 
   @override
