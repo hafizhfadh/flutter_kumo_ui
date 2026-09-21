@@ -6,7 +6,7 @@ Documentation and packaging release.
   `KumoListItem`, `KumoBreadcrumbItem`, `KumoDataPair`, `KumoBottomSheetItem`,
   the `KumoButtonVariant` / `KumoBadgeVariant` / `KumoToastKind` enums, and the
   `KumoToastManager` / `KumoResponsiveLayout.isDesktop` helpers.
-- Adds a screenshots gallery backed by the new `docs/images/` phone captures
+- Adds a screenshots gallery backed by the new `doc/images/` phone captures
   of the bundled example app.
 - No public API changes; `1.0.2` is a drop-in replacement for `1.0.1`.
 
