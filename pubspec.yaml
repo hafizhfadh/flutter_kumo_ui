@@ -1,9 +1,15 @@
 name: kumo_ui
-description: A mobile-first Flutter implementation of Cloudflare's Kumo UI design system, built using pure widgets.dart.
+description: "Cloudflare's Kumo UI design system for Flutter, on widgets.dart alone: light and dark schemes, the dashboard component set, and pure-Dart charts. No Material or Cupertino."
 version: 1.7.0
 homepage: https://github.com/hafizhfadh/flutter_kumo_ui
 repository: https://github.com/hafizhfadh/flutter_kumo_ui
 issue_tracker: https://github.com/hafizhfadh/flutter_kumo_ui/issues
+topics:
+  - flutter
+  - design-system
+  - ui-components
+  - charts
+  - theming
 
 environment:
   sdk: ^3.13.1
