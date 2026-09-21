@@ -525,6 +525,25 @@ cd example
 flutter run
 ```
 
+## Build with a coding agent
+
+The repository ships an agent skill at
+[`skills/flutter-kumo-ui/`](skills/flutter-kumo-ui/SKILL.md) that teaches a
+coding agent this package's API, conventions and pitfalls, so it writes
+`kumo_ui` code instead of guessing and reaching for Material. It follows the
+Agent Skills standard, so it is agent-agnostic: Claude Code, Codex, Cursor,
+Gemini CLI, Command Code and anything else implementing the standard can read
+it.
+
+```sh
+npx skills add hafizhfadh/flutter_kumo_ui
+```
+
+The skill covers app bootstrap (`KumoApp` / `KumoApp.router`), the light and dark
+schemes, the resolved text styles, every component constructor with its exact
+parameters and defaults, and the checklist a change has to satisfy before it is
+done.
+
 ## Additional information
 
 - Contributions, bug reports and feature requests are welcome via the
