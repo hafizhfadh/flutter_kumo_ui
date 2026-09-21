@@ -1,7 +1,6 @@
 import 'package:flutter/widgets.dart';
 
 import '../theme/kumo_theme.dart';
-import '../theme/kumo_typography.dart';
 import 'kumo_focusable.dart';
 
 /// A horizontal tab bar with a sliding accent indicator.
@@ -63,6 +62,7 @@ class _KumoTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = KumoTheme.of(context);
+    final styles = KumoTheme.textStylesOf(context);
 
     return Semantics(
       button: true,
@@ -91,7 +91,7 @@ class _KumoTab extends StatelessWidget {
             child: AnimatedDefaultTextStyle(
               duration: _duration,
               curve: Curves.easeOut,
-              style: KumoTypography.body.copyWith(
+              style: styles.body.copyWith(
                 color: isActive ? colors.textPrimary : colors.textSecondary,
                 fontWeight: isActive ? FontWeight.w600 : FontWeight.w500,
               ),

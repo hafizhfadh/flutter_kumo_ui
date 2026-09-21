@@ -2,15 +2,30 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 
 import 'kumo_colors.dart';
+import 'kumo_typography.dart';
 
 export 'kumo_colors.dart';
+export 'kumo_typography.dart';
 
 /// Exposes [KumoColors] to a subtree of Kumo widgets.
 ///
-/// Wrap an app or a screen with [KumoTheme] to override the palette; every Kumo
-/// component resolves its tokens with [KumoTheme.of].
+/// Wrap an app or a screen with [KumoTheme] to choose the color scheme; every
+/// Kumo component resolves its tokens with [KumoTheme.of].
+///
+/// ```dart
+/// KumoTheme(
+///   colors: KumoColors.of(MediaQuery.platformBrightnessOf(context)),
+///   child: WidgetsApp(...),
+/// )
+/// ```
+///
+/// The theme does not pick a mode on its own. The app owns that decision, so it
+/// can follow the platform, a stored preference, or a user-facing switch, and
+/// hand the result to [colors].
 class KumoTheme extends InheritedWidget {
   /// Creates a theme that provides [colors] to its descendants.
+  ///
+  /// Defaults to the dark scheme, matching [KumoColors]' own default.
   const KumoTheme({
     super.key,
     this.colors = const KumoColors(),
@@ -51,6 +66,21 @@ class KumoTheme extends InheritedWidget {
     return context.dependOnInheritedWidgetOfExactType<KumoTheme>()?.colors ??
         const KumoColors();
   }
+
+  /// The type scale tinted for the scheme currently in scope.
+  ///
+  /// This is what a widget paints with: unlike the [KumoTypography] statics,
+  /// which carry the dark scheme's tones, these follow whatever [colors] the
+  /// nearest [KumoTheme] provides, so text stays legible in both schemes.
+  ///
+  /// The resolved set is memoized per [KumoColors] instance.
+  static KumoTextStyles textStylesOf(BuildContext context) {
+    final KumoColors colors = of(context);
+    return _resolved[colors] ??= KumoTypography.resolve(colors);
+  }
+
+  static final Expando<KumoTextStyles> _resolved =
+      Expando<KumoTextStyles>('kumoTextStyles');
 
   @override
   bool updateShouldNotify(KumoTheme oldWidget) => colors != oldWidget.colors;

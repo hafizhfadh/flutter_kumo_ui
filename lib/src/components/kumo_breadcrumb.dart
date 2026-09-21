@@ -2,7 +2,6 @@ import 'package:flutter/widgets.dart';
 import 'package:phosphor_icons/phosphor_icons.dart';
 
 import '../theme/kumo_theme.dart';
-import '../theme/kumo_typography.dart';
 import 'kumo_focusable.dart';
 
 /// One step in a [KumoBreadcrumb] trail.
@@ -73,13 +72,14 @@ class _KumoBreadcrumbStep extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = KumoTheme.of(context);
+    final styles = KumoTheme.textStylesOf(context);
     final VoidCallback? onTap = isCurrent ? null : item.onTap;
 
     final Widget label = Text(
       item.label,
       maxLines: 1,
       overflow: TextOverflow.ellipsis,
-      style: KumoTypography.body.copyWith(
+      style: styles.body.copyWith(
         color: isCurrent ? colors.textPrimary : colors.textSecondary,
         fontWeight: isCurrent ? FontWeight.w600 : FontWeight.w400,
       ),

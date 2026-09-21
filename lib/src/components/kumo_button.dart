@@ -2,7 +2,6 @@ import 'package:flutter/widgets.dart';
 import 'package:phosphor_icons/phosphor_icons.dart';
 
 import '../theme/kumo_theme.dart';
-import '../theme/kumo_typography.dart';
 import 'kumo_focusable.dart';
 
 /// Visual treatments for [KumoButton].
@@ -44,6 +43,7 @@ class KumoButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = KumoTheme.of(context);
+    final styles = KumoTheme.textStylesOf(context);
     final glyph = icon;
     final isEnabled = onPressed != null;
     final isPrimary = variant == KumoButtonVariant.primary;
@@ -99,7 +99,7 @@ class KumoButton extends StatelessWidget {
                     label,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: KumoTypography.body.copyWith(
+                    style: styles.body.copyWith(
                       color: foreground,
                       fontWeight: FontWeight.w600,
                     ),

@@ -2,7 +2,6 @@ import 'package:flutter/widgets.dart';
 import 'package:phosphor_icons/phosphor_icons.dart';
 
 import '../theme/kumo_theme.dart';
-import '../theme/kumo_typography.dart';
 import 'kumo_focusable.dart';
 
 /// A bordered container that groups related [KumoListItem] rows.
@@ -22,6 +21,7 @@ class KumoListGroup extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = KumoTheme.of(context);
+    final styles = KumoTheme.textStylesOf(context);
     if (children.isEmpty) {
       return const SizedBox.shrink();
     }
@@ -35,7 +35,7 @@ class KumoListGroup extends StatelessWidget {
             padding: const EdgeInsets.only(left: 2, bottom: 8),
             child: Text(
               title!.toUpperCase(),
-              style: KumoTypography.caption.copyWith(
+              style: styles.caption.copyWith(
                 color: colors.textMuted,
                 fontSize: 11,
                 fontWeight: FontWeight.w700,
@@ -102,6 +102,7 @@ class KumoListItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = KumoTheme.of(context);
+    final styles = KumoTheme.textStylesOf(context);
 
     return Semantics(
       button: onTap != null,
@@ -128,7 +129,7 @@ class KumoListItem extends StatelessWidget {
                     children: [
                       Text(
                         title,
-                        style: KumoTypography.body,
+                        style: styles.body,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -136,7 +137,7 @@ class KumoListItem extends StatelessWidget {
                         const SizedBox(height: 2),
                         Text(
                           subtitle!,
-                          style: KumoTypography.caption,
+                          style: styles.caption,
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
                         ),

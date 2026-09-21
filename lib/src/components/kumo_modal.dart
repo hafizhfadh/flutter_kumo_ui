@@ -2,7 +2,6 @@ import 'package:flutter/widgets.dart';
 import 'package:phosphor_icons/phosphor_icons.dart';
 
 import '../theme/kumo_theme.dart';
-import '../theme/kumo_typography.dart';
 import 'kumo_focusable.dart';
 
 /// Presents Kumo-styled modal dialogs without Material's `showDialog`.
@@ -30,7 +29,7 @@ abstract final class KumoModal {
       RawDialogRoute<T>(
         barrierDismissible: barrierDismissible,
         barrierLabel: title ?? 'Dialog',
-        barrierColor: const Color(0x99000000),
+        barrierColor: colors.scrim,
         pageBuilder: (context, animation, secondaryAnimation) => KumoTheme(
           colors: colors,
           child: _KumoModalCard(title: title, child: child),
@@ -49,6 +48,7 @@ class _KumoModalCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = KumoTheme.of(context);
+    final styles = KumoTheme.textStylesOf(context);
 
     return Center(
       child: Container(
@@ -69,7 +69,7 @@ class _KumoModalCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 if (title != null)
-                  Expanded(child: Text(title!, style: KumoTypography.h2))
+                  Expanded(child: Text(title!, style: styles.h2))
                 else
                   const Spacer(),
                 const SizedBox(width: 12),

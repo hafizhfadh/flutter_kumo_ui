@@ -1,7 +1,6 @@
 import 'package:flutter/widgets.dart';
 
 import '../theme/kumo_theme.dart';
-import '../theme/kumo_typography.dart';
 import 'kumo_button.dart';
 
 /// A compact page switcher.
@@ -30,6 +29,7 @@ class KumoPagination extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = KumoTheme.of(context);
+    final styles = KumoTheme.textStylesOf(context);
     final int lastPage = totalPages < 1 ? 1 : totalPages;
     final int page = currentPage.clamp(1, lastPage);
     final bool canGoBack = page > 1;
@@ -48,7 +48,7 @@ class KumoPagination extends StatelessWidget {
               'Page $page of $lastPage',
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: KumoTypography.code.copyWith(color: colors.textSecondary),
+              style: styles.code.copyWith(color: colors.textSecondary),
             ),
           ),
         ),

@@ -31,6 +31,7 @@ export 'package:flutter/widgets.dart'
         Key,
         ValueKey,
         GlobalKey,
+        Brightness,
         // Layout primitives
         Column,
         Row,
@@ -49,6 +50,7 @@ export 'package:flutter/widgets.dart'
         CrossAxisAlignment,
         MainAxisSize,
         Wrap,
+        Builder,
         // Geometry, paints and insets
         EdgeInsets,
         EdgeInsetsGeometry,
@@ -96,7 +98,9 @@ export 'package:flutter/widgets.dart'
         WidgetBuilder,
         MediaQuery,
         LayoutBuilder,
-        SafeArea;
+        SafeArea,
+        WidgetsBinding,
+        WidgetsBindingObserver;
 
 // ---------------------------------------------------------------------------
 // Kumo components

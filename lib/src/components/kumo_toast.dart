@@ -4,7 +4,6 @@ import 'package:flutter/widgets.dart';
 import 'package:phosphor_icons/phosphor_icons.dart';
 
 import '../theme/kumo_theme.dart';
-import '../theme/kumo_typography.dart';
 import 'kumo_focusable.dart';
 
 /// The four states a [KumoToast] can report.
@@ -54,6 +53,7 @@ class KumoToast extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = KumoTheme.of(context);
+    final styles = KumoTheme.textStylesOf(context);
     final (IconData icon, Color accent) = switch (kind) {
       KumoToastKind.info => (PhosphorIconsRegular.info, colors.info),
       KumoToastKind.success => (
@@ -89,13 +89,13 @@ class KumoToast extends StatelessWidget {
                 if (title != null) ...[
                   Text(
                     title!,
-                    style: KumoTypography.body.copyWith(
+                    style: styles.body.copyWith(
                       fontWeight: FontWeight.w600,
                     ),
                   ),
                   const SizedBox(height: 2),
                 ],
-                Text(message, style: KumoTypography.bodyMuted),
+                Text(message, style: styles.bodyMuted),
               ],
             ),
           ),
@@ -149,6 +149,15 @@ abstract final class KumoToastManager {
   static OverlayEntry? _entry;
   static int _nextId = 0;
 
+  /// Scheme handed to the toast layer.
+  ///
+  /// The layer outlives any single toast, so it reads the scheme from this
+  /// notifier rather than capturing the colors of whichever toast happened to
+  /// open it. Without that, toasts shown after a mode switch would keep
+  /// painting in the previous scheme.
+  static final ValueNotifier<KumoColors> _colors =
+      ValueNotifier<KumoColors>(const KumoColors());
+
   /// Number of toasts currently on screen.
   static int get activeCount => _active.value.length;
 
@@ -174,8 +183,9 @@ abstract final class KumoToastManager {
       kind: kind,
       duration: duration,
     );
+    _colors.value = KumoTheme.of(context);
     _active.value = <_ActiveToast>[..._active.value, toast];
-    _ensureLayer(overlay, KumoTheme.of(context));
+    _ensureLayer(overlay);
   }
 
   /// Removes the toast with [id], if it is still on screen.
@@ -188,7 +198,7 @@ abstract final class KumoToastManager {
   /// Removes every visible toast.
   static void clear() => _active.value = <_ActiveToast>[];
 
-  static void _ensureLayer(OverlayState overlay, KumoColors colors) {
+  static void _ensureLayer(OverlayState overlay) {
     final OverlayEntry? existing = _entry;
     if (existing != null && existing.mounted) {
       return;
@@ -198,8 +208,10 @@ abstract final class KumoToastManager {
     _entry = null;
     late final OverlayEntry entry;
     entry = OverlayEntry(
-      builder: (BuildContext context) => KumoTheme(
-        colors: colors,
+      builder: (BuildContext context) => ValueListenableBuilder<KumoColors>(
+        valueListenable: _colors,
+        builder: (BuildContext context, KumoColors colors, Widget? child) =>
+            KumoTheme(colors: colors, child: child!),
         child: _KumoToastLayer(
           active: _active,
           onEmpty: () {
@@ -209,6 +221,7 @@ abstract final class KumoToastManager {
             if (identical(_entry, entry)) {
               _entry = null;
             }
+            _colors.value = const KumoColors();
           },
         ),
       ),

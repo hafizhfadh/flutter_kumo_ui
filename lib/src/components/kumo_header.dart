@@ -1,7 +1,7 @@
 import 'package:flutter/widgets.dart';
 
 import '../layout/kumo_responsive_layout.dart';
-import '../theme/kumo_typography.dart';
+import '../theme/kumo_theme.dart';
 
 /// A section header that reflows between phone and desktop arrangements.
 ///
@@ -33,6 +33,8 @@ class KumoHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final styles = KumoTheme.textStylesOf(context);
+
     final heading = Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
@@ -44,7 +46,7 @@ class KumoHeader extends StatelessWidget {
             children: [
               Text(
                 title,
-                style: KumoTypography.h2,
+                style: styles.h2,
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
               ),
@@ -52,7 +54,7 @@ class KumoHeader extends StatelessWidget {
                 const SizedBox(height: 2),
                 Text(
                   subtitle!,
-                  style: KumoTypography.bodyMuted,
+                  style: styles.bodyMuted,
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),

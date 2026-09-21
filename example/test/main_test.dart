@@ -11,6 +11,7 @@ void _setViewport(WidgetTester tester, Size size) {
 
 /// Section headings that prove every showcase block rendered.
 const List<String> _sectionLabels = <String>[
+  'Theme',
   'Segmented control',
   'Text input',
   'Toggle',
@@ -23,8 +24,10 @@ const List<String> _sectionLabels = <String>[
   'Badges',
   'Checkbox and select',
   'Pagination',
+  'Bottom sheet',
   'Toast',
   'Code block',
+  'Palette',
   'Modal',
 ];
 
@@ -88,6 +91,11 @@ void main() {
 
     await tester.pumpWidget(const KumoExampleApp());
     await tester.pumpAndSettle();
+
+    // The example follows the platform by default, and the test platform
+    // reports light. Pin the dark scheme so the color assertions below are
+    // deterministic.
+    await _revealAndTap(tester, find.text('Dark'));
 
     // Checkbox toggles in place: the fill drops from the brand orange back to
     // the resting tone.
@@ -193,5 +201,41 @@ void main() {
     await _revealAndTap(tester, find.text('Pro'));
     expect(find.text('Pro'), findsOneWidget);
     expect(find.byType(KumoBottomSheetItem), findsNothing);
+  });
+
+  testWidgets('the theme selector repaints the app in the chosen scheme', (
+    tester,
+  ) async {
+    _setViewport(tester, const Size(390, 844));
+
+    await tester.pumpWidget(const KumoExampleApp());
+    await tester.pumpAndSettle();
+
+    // The scaffold paints the scheme canvas, so it reports the active mode.
+    Color canvas() =>
+        tester.widget<ColoredBox>(find.byType(ColoredBox).first).color;
+
+    await _revealAndTap(tester, find.text('Dark'));
+    expect(canvas(), const KumoColors.dark().canvas);
+
+    await _revealAndTap(tester, find.text('Light'));
+    expect(canvas(), const KumoColors.light().canvas);
+  });
+
+  testWidgets('the bottom sheet opens and reports the chosen action', (
+    tester,
+  ) async {
+    _setViewport(tester, const Size(390, 844));
+
+    await tester.pumpWidget(const KumoExampleApp());
+    await tester.pumpAndSettle();
+
+    await _revealAndTap(tester, find.text('Zone actions'));
+    expect(find.byType(KumoBottomSheetItem), findsNWidgets(3));
+    expect(find.text('Rename'), findsOneWidget);
+
+    await _revealAndTap(tester, find.text('Duplicate'));
+    expect(find.byType(KumoBottomSheetItem), findsNothing);
+    expect(find.text('Chose Duplicate.'), findsOneWidget);
   });
 }

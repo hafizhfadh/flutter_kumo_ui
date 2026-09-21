@@ -3,7 +3,6 @@ import 'package:phosphor_icons/phosphor_icons.dart';
 
 import '../layout/kumo_responsive_layout.dart';
 import '../theme/kumo_theme.dart';
-import '../theme/kumo_typography.dart';
 import 'kumo_bottom_sheet.dart';
 import 'kumo_focusable.dart';
 
@@ -134,6 +133,7 @@ class _KumoSelectState<T> extends State<KumoSelect<T>> {
   @override
   Widget build(BuildContext context) {
     final colors = KumoTheme.of(context);
+    final styles = KumoTheme.textStylesOf(context);
     final String selectedLabel = widget.options[widget.value] ?? '';
 
     return Column(
@@ -145,7 +145,7 @@ class _KumoSelectState<T> extends State<KumoSelect<T>> {
             padding: const EdgeInsets.only(bottom: 6),
             child: Text(
               widget.label!.toUpperCase(),
-              style: KumoTypography.caption.copyWith(
+              style: styles.caption.copyWith(
                 color: colors.textSecondary,
                 fontSize: 11,
                 fontWeight: FontWeight.w700,
@@ -184,7 +184,7 @@ class _KumoSelectState<T> extends State<KumoSelect<T>> {
                         selectedLabel,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: KumoTypography.body,
+                        style: styles.body,
                       ),
                     ),
                     const SizedBox(width: 8),

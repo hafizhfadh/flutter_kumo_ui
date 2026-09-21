@@ -2,7 +2,6 @@ import 'package:flutter/widgets.dart';
 import 'package:phosphor_icons/phosphor_icons.dart';
 
 import '../theme/kumo_theme.dart';
-import '../theme/kumo_typography.dart';
 import 'kumo_focusable.dart';
 
 /// A labelled checkbox styled with Kumo tokens.
@@ -42,6 +41,7 @@ class KumoCheckbox extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = KumoTheme.of(context);
+    final styles = KumoTheme.textStylesOf(context);
 
     return Semantics(
       checked: value,
@@ -78,13 +78,14 @@ class KumoCheckbox extends StatelessWidget {
                     ),
                     child: value
                         // The glyph is reinforcement: the checked state is
-                        // already carried by the orange fill, which measures
-                        // 5.71:1 against the resting fill and 7.12:1 against
-                        // the canvas.
-                        ? const PhosphorIcon(
+                        // already carried by the brand fill. `canvas` is the
+                        // tone the primary button uses for its label, so the
+                        // glyph clears 7.12:1 on the dark fill and 5.67:1 on
+                        // the light one.
+                        ? PhosphorIcon(
                             PhosphorIconsRegular.check,
                             size: 12,
-                            color: Color(0xFFFFFFFF),
+                            color: colors.canvas,
                           )
                         : null,
                   ),
@@ -94,7 +95,7 @@ class KumoCheckbox extends StatelessWidget {
                   Flexible(
                     child: Text(
                       label!,
-                      style: KumoTypography.body.copyWith(
+                      style: styles.body.copyWith(
                         color: isDisabled
                             ? colors.textMuted
                             : colors.textPrimary,

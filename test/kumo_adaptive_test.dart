@@ -62,6 +62,63 @@ void main() {
       expect(colors.warning, KumoPalette.amber5);
     });
 
+    test('the unnamed constructor is the dark scheme', () {
+      expect(const KumoColors(), const KumoColors.dark());
+      expect(const KumoColors().brightness, Brightness.dark);
+      expect(const KumoColors.light().brightness, Brightness.light);
+    });
+
+    test('KumoColors.of picks the scheme for a brightness', () {
+      expect(KumoColors.of(Brightness.dark), const KumoColors.dark());
+      expect(KumoColors.of(Brightness.light), const KumoColors.light());
+    });
+
+    test('the two schemes are distinct at every surface token', () {
+      const KumoColors dark = KumoColors.dark();
+      const KumoColors light = KumoColors.light();
+      expect(light.canvas, isNot(dark.canvas));
+      expect(light.surface, isNot(dark.surface));
+      expect(light.subtleSurface, isNot(dark.subtleSurface));
+      expect(light.textPrimary, isNot(dark.textPrimary));
+      expect(light.primary, isNot(dark.primary));
+    });
+
+    test('light tokens resolve to steps of the light palette', () {
+      const KumoColors colors = KumoColors.light();
+      expect(colors.canvas, KumoLightPalette.gray8);
+      expect(colors.surface, KumoLightPalette.gray9);
+      expect(colors.subtleSurface, KumoLightPalette.gray7);
+      expect(colors.border, KumoLightPalette.gray5);
+      expect(colors.textPrimary, KumoLightPalette.gray0);
+      expect(colors.textSecondary, KumoLightPalette.gray2);
+      expect(colors.textMuted, KumoLightPalette.gray3);
+      expect(colors.primary, KumoLightPalette.orange5);
+      expect(colors.info, KumoLightPalette.blue5);
+      expect(colors.danger, KumoLightPalette.red5);
+      expect(colors.success, KumoLightPalette.green5);
+      expect(colors.warning, KumoLightPalette.amber5);
+    });
+
+    test('the light palette is also a ten-step ascending ramp', () {
+      const List<Color> grays = <Color>[
+        KumoLightPalette.gray0,
+        KumoLightPalette.gray1,
+        KumoLightPalette.gray2,
+        KumoLightPalette.gray3,
+        KumoLightPalette.gray4,
+        KumoLightPalette.gray5,
+        KumoLightPalette.gray6,
+        KumoLightPalette.gray7,
+        KumoLightPalette.gray8,
+        KumoLightPalette.gray9,
+      ];
+      expect(grays.toSet().length, 10);
+
+      for (var index = 1; index < grays.length; index++) {
+        expect(grays[index].r, greaterThan(grays[index - 1].r));
+      }
+    });
+
     test('the palette is a ten-step gray ramp plus five accents', () {
       const List<Color> grays = <Color>[
         KumoPalette.gray0,

@@ -1,7 +1,6 @@
 import 'package:flutter/widgets.dart';
 
 import '../theme/kumo_theme.dart';
-import '../theme/kumo_typography.dart';
 import 'kumo_focusable.dart';
 
 /// A horizontal selector that switches between a fixed set of values.
@@ -69,6 +68,7 @@ class _Segment extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = KumoTheme.of(context);
+    final styles = KumoTheme.textStylesOf(context);
 
     return Semantics(
       button: true,
@@ -97,7 +97,7 @@ class _Segment extends StatelessWidget {
               label,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: KumoTypography.body.copyWith(
+              style: styles.body.copyWith(
                 color: isSelected ? colors.primary : colors.textSecondary,
                 fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
               ),

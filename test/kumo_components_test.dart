@@ -54,6 +54,35 @@ void main() {
       expect(KumoTypography.code.fontWeight, FontWeight.w500);
       expect(KumoTypography.code.fontFamily, 'monospace');
     });
+
+    test('resolve tints the scale with the scheme text tones', () {
+      final KumoTextStyles dark = KumoTypography.resolve(
+        const KumoColors.dark(),
+      );
+      final KumoTextStyles light = KumoTypography.resolve(
+        const KumoColors.light(),
+      );
+
+      expect(dark.body.color, const KumoColors.dark().textPrimary);
+      expect(dark.bodyMuted.color, const KumoColors.dark().textSecondary);
+      expect(light.body.color, const KumoColors.light().textPrimary);
+      expect(light.bodyMuted.color, const KumoColors.light().textSecondary);
+      expect(light.body.color, isNot(dark.body.color));
+    });
+
+    test('resolve keeps the size, weight and family of every token', () {
+      final KumoTextStyles styles = KumoTypography.resolve(
+        const KumoColors.light(),
+      );
+
+      expect(styles.h1.fontSize, KumoTypography.h1.fontSize);
+      expect(styles.h1.fontWeight, KumoTypography.h1.fontWeight);
+      expect(styles.h2.fontSize, KumoTypography.h2.fontSize);
+      expect(styles.body.fontSize, KumoTypography.body.fontSize);
+      expect(styles.bodyMuted.fontSize, KumoTypography.bodyMuted.fontSize);
+      expect(styles.caption.fontSize, KumoTypography.caption.fontSize);
+      expect(styles.code.fontFamily, 'monospace');
+    });
   });
 
   group('KumoCodeBlock', () {

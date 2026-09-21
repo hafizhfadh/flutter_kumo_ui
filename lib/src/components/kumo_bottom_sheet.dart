@@ -1,7 +1,6 @@
 import 'package:flutter/widgets.dart';
 
 import '../theme/kumo_theme.dart';
-import '../theme/kumo_typography.dart';
 import 'kumo_focusable.dart';
 
 /// Presents Kumo-styled bottom sheets without Material's `showModalBottomSheet`.
@@ -34,7 +33,7 @@ class KumoBottomSheet {
       RawDialogRoute<T>(
         barrierDismissible: barrierDismissible,
         barrierLabel: title ?? 'Options',
-        barrierColor: const Color(0x99000000),
+        barrierColor: colors.scrim,
         transitionDuration: const Duration(milliseconds: 220),
         transitionBuilder:
             (
@@ -93,6 +92,7 @@ class _KumoBottomSheetSurface extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = KumoTheme.of(context);
+    final styles = KumoTheme.textStylesOf(context);
     final String? heading = title;
 
     return SafeArea(
@@ -117,7 +117,7 @@ class _KumoBottomSheetSurface extends StatelessWidget {
                   child: Row(
                     children: [
                       if (heading != null)
-                        Expanded(child: Text(heading, style: KumoTypography.h2))
+                        Expanded(child: Text(heading, style: styles.h2))
                       else
                         const Spacer(),
                       KumoFocusable(
@@ -138,7 +138,7 @@ class _KumoBottomSheetSurface extends StatelessWidget {
                               alignment: Alignment.center,
                               child: Text(
                                 'Close',
-                                style: KumoTypography.body.copyWith(
+                                style: styles.body.copyWith(
                                   color: colors.textSecondary,
                                 ),
                               ),
@@ -184,6 +184,7 @@ class KumoBottomSheetItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = KumoTheme.of(context);
+    final styles = KumoTheme.textStylesOf(context);
 
     return Semantics(
       button: true,
@@ -203,7 +204,7 @@ class KumoBottomSheetItem extends StatelessWidget {
             alignment: AlignmentDirectional.centerStart,
             child: Text(
               label,
-              style: KumoTypography.body.copyWith(
+              style: styles.body.copyWith(
                 color: isSelected ? colors.primary : colors.textPrimary,
                 fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
               ),

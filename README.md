@@ -3,7 +3,7 @@
 **A mobile-first Flutter implementation of Cloudflare's Kumo UI design system, built on `package:flutter/widgets.dart` alone.**
 
 [![pub package](https://img.shields.io/pub/v/kumo_ui.svg)](https://pub.dev/packages/kumo_ui)
-![version](https://img.shields.io/badge/version-1.0.2-F38020)
+![version](https://img.shields.io/badge/version-1.1.0-F38020)
 ![platforms](https://img.shields.io/badge/platform-android_%7C_ios_%7C_macos_%7C_linux_%7C_windows-3DDC84)
 ![web](https://img.shields.io/badge/web-not_supported-critical)
 ![flutter](https://img.shields.io/badge/flutter-widgets.dart_only-02569B)
@@ -16,8 +16,8 @@ resolves its colors from `KumoTheme.of(context)`.
 
 ## Screenshots
 
-Phone captures of the bundled [`example/`](example/lib/main.dart) app, top to
-bottom. Tap an image for the full-size version.
+Phone captures of the bundled [`example/`](example/lib/main.dart) app in the
+dark scheme, top to bottom. Tap an image for the full-size version.
 
 | | | |
 | --- | --- | --- |
@@ -71,7 +71,7 @@ Add the package and its icon dependency to your `pubspec.yaml`:
 dependencies:
   flutter:
     sdk: flutter
-  kumo_ui: ^1.0.2
+  kumo_ui: ^1.1.0
   phosphor_icons: ^3.0.1
 ```
 
@@ -89,7 +89,7 @@ Flutter primitives it is itself built from, grouped as:
 - **Layout** — `Column`, `Row`, `Stack`, `Positioned`, `Expanded`, `Flexible`,
   `Spacer`, `Container`, `SizedBox`, `Padding`, `Align`, `Center`,
   `ConstrainedBox`, `BoxConstraints`, `Wrap`, `CrossAxisAlignment`,
-  `MainAxisSize`.
+  `MainAxisSize`, `Builder`.
 - **Geometry, paint and insets** — `EdgeInsets`, `EdgeInsetsGeometry`,
   `Alignment`, `BorderRadius`, `BoxDecoration`, `Border`, `BorderSide`,
   `BoxShape`, `Color`, `ColoredBox`.
@@ -103,7 +103,8 @@ Flutter primitives it is itself built from, grouped as:
   `SizeTransition`, `AnimationController`.
 - **Navigation and scaffolding** — `runApp`, `WidgetsApp`, `Navigator`,
   `PageRouteBuilder`, `RouteSettings`, `WidgetBuilder`, `MediaQuery`,
-  `LayoutBuilder`, `SafeArea`.
+  `LayoutBuilder`, `SafeArea`, `WidgetsBinding`, `WidgetsBindingObserver`,
+  `Brightness`.
 
 Two things worth knowing about those re-exports:
 
@@ -125,13 +126,60 @@ import 'package:phosphor_icons/phosphor_icons.dart';
 `kumo_ui` targets Android, iOS, macOS, Linux and Windows. Do not add a web
 target; the package will throw at runtime if you do.
 
+## Color modes
+
+Both schemes ship in the box. A `KumoColors` describes **one** scheme; the app
+decides which one is in scope and hands it to `KumoTheme`. There is no mode
+state inside the library, so a theme can follow the platform, a stored
+preference or a switch without fighting the package for control.
+
+```dart
+// Pick a scheme from a brightness...
+final colors = KumoColors.of(MediaQuery.platformBrightnessOf(context));
+
+// ...or name one directly.
+const light = KumoColors.light();
+const dark = KumoColors.dark();       // same as `const KumoColors()`
+```
+
+| | Canvas | Surface | Recessed | Border | Text | Brand |
+| --- | --- | --- | --- | --- | --- | --- |
+| Dark | `#111111` | `#1D1D1D` | `#262626` | `#333333` | `#EDEDED` | `#F38020` |
+| Light | `#F7F7F7` | `#FFFFFF` | `#EAEAEA` | `#D4D4D8` | `#111111` | `#B03A0A` |
+
+The light brand orange is a deeper step on purpose: `#F38020` measures 2.6:1 on
+a white canvas, which is fine for a fill and not enough for text. Every text
+token in both schemes clears WCAG 2.1 AA (4.5:1) against every surface it can be
+painted on, and every non-text token clears 3:1. Both schemes are asserted by
+the test suite rather than checked by eye.
+
+`KumoColors.brightness` reports which scheme a token set is, for the rare case
+where consumer code needs to branch on the mode.
+
+### Text follows the scheme
+
+`KumoTypography`'s statics are the scale with the **dark** tones applied, which
+keeps them safe to use outside a theme. A widget painting inside a themed
+surface should use the resolved set instead, so its text tracks the active
+scheme:
+
+```dart
+final styles = KumoTheme.textStylesOf(context);
+Text('Zone settings', style: styles.h2);
+```
+
+`KumoTheme.textStylesOf` memoizes per `KumoColors`, and
+`KumoTypography.resolve(colors)` builds the same set when the tokens are already
+in hand.
+
 ## Usage
 
 ### 1. Wrap your app in `KumoTheme` and `WidgetsApp`
 
-`KumoTheme` supplies the palette to every descendant, and `WidgetsApp` provides
-the navigator, text direction and `MediaQuery` that Kumo widgets rely on —
-without pulling in Material.
+`KumoTheme` supplies the color scheme to every descendant, and `WidgetsApp`
+provides the navigator, text direction and `MediaQuery` that Kumo widgets rely
+on — without pulling in Material. The theme takes a `KumoColors`; which scheme
+it gets is the app's call.
 
 ```dart
 import 'package:kumo_ui/kumo_ui.dart';
@@ -147,12 +195,18 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Follow the platform, or hand over `KumoColors.dark()` /
+    // `KumoColors.light()` to pin one scheme.
+    final brightness =
+        WidgetsBinding.instance.platformDispatcher.platformBrightness;
+    final colors = KumoColors.of(brightness);
+
     return KumoTheme(
-      colors: const KumoColors(),
+      colors: colors,
       child: WidgetsApp(
         title: 'Kumo',
-        color: const Color(0xFF111111),
-        textStyle: KumoTypography.body,
+        color: colors.canvas,
+        textStyle: KumoTypography.resolve(colors).body,
         pageRouteBuilder: <T>(RouteSettings settings, WidgetBuilder builder) =>
             PageRouteBuilder<T>(
               settings: settings,
@@ -366,42 +420,58 @@ the window `MediaQuery` instead.
   returns the nearest ancestor's colors, falling back to `const KumoColors()`
   when there is none, and asserts the platform guardrail on every read.
   `KumoTheme.ensureSupportedPlatform()` performs that check once at startup.
-- `KumoPalette` — the raw scale: a ten-step `gray0`–`gray9` ramp plus
-  `orange5`, `blue5`, `red5`, `green5` and `amber5` accents.
-- `KumoColors` — the semantic layer. Every token resolves to a `KumoPalette`
-  step:
+- `KumoPalette` — the raw **dark** scale: a ten-step `gray0`–`gray9` ramp,
+  darkest to lightest, plus `orange5`, `blue5`, `red5`, `green5` and `amber5`
+  accents.
+- `KumoLightPalette` — the raw **light** scale, mirroring it step for step, so a
+  token reads the same index in either scheme. Its accents are deeper, because
+  the dark ones do not survive a light surface.
+- `KumoColors` — the semantic layer. Every token resolves to a step of the
+  active scheme's palette:
 
-  | Token | Default | Role |
-  | --- | --- | --- |
-  | `canvas` | `gray0` `#111111` | Page background |
-  | `surface` | `gray1` `#1D1D1D` | Default raised surface |
-  | `subtleSurface` | `gray2` `#262626` | Recessed fill (inputs, toggles, badges) |
-  | `border` | `gray3` `#333333` | Hairline dividers and outlines |
-  | `primary` | `orange5` `#F38020` | Brand signal and active fill |
-  | `focus` | `#E9E9E9` | Focus ring |
-  | `textPrimary` | `gray9` `#EDEDED` | High-emphasis text |
-  | `textSecondary` | `gray6` `#A1A1AA` | Labels, hints, placeholders |
-  | `textMuted` | `gray5` `#8D8D99` | Lowest-emphasis AA text |
-  | `info` | `blue5` `#0EA5E9` | Info status |
-  | `success` | `green5` `#34D399` | Success status |
-  | `warning` | `amber5` `#F59E0B` | Warning status |
-  | `danger` | `red5` `#EF4444` | Destructive **indicator** only |
-  | `dangerText` | `#F87171` | Destructive **text** (contrast-safe) |
+  | Token | Dark | Light | Role |
+  | --- | --- | --- | --- |
+  | `canvas` | `#111111` | `#F7F7F7` | Page background |
+  | `surface` | `#1D1D1D` | `#FFFFFF` | Default raised surface |
+  | `subtleSurface` | `#262626` | `#EAEAEA` | Recessed fill (inputs, toggles, badges) |
+  | `border` | `#333333` | `#D4D4D8` | Hairline dividers and outlines |
+  | `primary` | `#F38020` | `#B03A0A` | Brand signal and active fill |
+  | `focus` | `#E9E9E9` | `#111111` | Focus ring |
+  | `textPrimary` | `#EDEDED` | `#111111` | High-emphasis text |
+  | `textSecondary` | `#A1A1AA` | `#52525B` | Labels, hints, placeholders |
+  | `textMuted` | `#8D8D99` | `#5A5F6B` | Lowest-emphasis AA text |
+  | `info` | `#0EA5E9` | `#0369A1` | Info status |
+  | `success` | `#34D399` | `#036B4E` | Success status |
+  | `warning` | `#F59E0B` | `#9A4D08` | Warning status |
+  | `danger` | `#EF4444` | `#DC2626` | Destructive **indicator** only |
+  | `dangerText` | `#F87171` | `#B91C1C` | Destructive **text** (contrast-safe) |
+  | `scrim` | 60% black | 20% black | Modal and bottom-sheet barrier wash |
 
   Keep `danger` for fills, icons and borders; use `dangerText` whenever the red
-  is the text itself, because `danger` does not clear 4.5:1 on the dark
-  surfaces.
-- `KumoTypography` — `h1`, `h2`, `body`, `bodyMuted`, `caption` and `code`
-  text styles.
+  is the text itself, because `danger` sits below 4.5:1 on the recessed surfaces
+  in both schemes.
+- `KumoColors.dark()` / `KumoColors.light()` / `KumoColors.of(brightness)` — the
+  two schemes and the lookup between them. The unnamed `const KumoColors()` is
+  the dark scheme, so it stays a valid default.
+- `KumoTextStyles` and `KumoTypography.resolve(colors)` — the type scale tinted
+  for one scheme. `KumoTheme.textStylesOf(context)` resolves it for whichever
+  scheme is in scope, and is what the components paint with.
+- `KumoTypography` — `h1`, `h2`, `body`, `bodyMuted`, `caption` and `code` text
+  styles, carrying the dark tones.
 - `kKumoBreakpoint` — the shared 600px mobile/desktop switchover point.
 
 ## Example
 
 A runnable showcase lives in [`example/`](example/lib/main.dart). It exercises
-every component at a phone and a desktop viewport and imports only
-`package:kumo_ui/kumo_ui.dart` plus the Phosphor glyph constants. The select
-example is also what surfaces `KumoBottomSheet` on phones, since that is where
-`KumoSelect` renders its action sheet.
+every public widget at a phone and a desktop viewport, and imports only
+`package:kumo_ui/kumo_ui.dart` plus the Phosphor glyph constants.
+
+A **System / Light / Dark** selector at the top of the screen switches the
+scheme live. System mode reads
+`WidgetsBinding.instance.platformDispatcher.platformBrightness` and rebuilds
+`KumoTheme` with the matching `KumoColors`, which is the same wiring an app
+would use. The `KumoSelect` example is what surfaces `KumoBottomSheet` on
+phones, and a direct `KumoBottomSheet.show` section sits beside it.
 
 ```sh
 cd example

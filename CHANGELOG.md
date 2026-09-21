@@ -1,3 +1,30 @@
+## 1.1.0
+
+Light and dark color modes.
+
+- `KumoColors.light()` joins `KumoColors.dark()`, with `KumoColors.of(brightness)`
+  to pick a scheme and a `brightness` field to read it back. Both schemes clear
+  WCAG 2.1 AA (4.5:1 for text, 3:1 for non-text), verified by the same test
+  suite rather than by eye.
+- `KumoLightPalette` carries the light half of the raw scale. The dark accents
+  cannot be reused on light surfaces: the brand orange is 2.6:1 on white, so the
+  light `orange5` is deepened until it clears AA as text.
+- `KumoTextStyles` and `KumoTypography.resolve(colors)` expose the type scale
+  tinted for one scheme, and `KumoTheme.textStylesOf(context)` resolves it for
+  the active one. Components paint with those instead of the dark-only statics,
+  which is what makes the light scheme legible.
+- New `scrim` token drives the modal and bottom-sheet barriers, so the light
+  scheme dims its background instead of washing it black.
+- The checkbox check glyph now uses `canvas`, the same tone the primary button
+  uses for its label. That lifts it from 2.9:1 to 7.12:1 on the dark fill.
+- Fixed: the toast overlay layer captured the colors of whichever toast opened
+  it, so toasts shown after a color-mode switch kept the previous scheme.
+- The bundled example gains a System / Light / Dark selector plus sections for
+  the bottom sheet, the inline toast, every toast kind, the raw palette and
+  `kKumoBreakpoint`, so every public widget is demonstrated.
+- Additive only: no existing signature changed, and `const KumoColors()` is
+  still the dark scheme.
+
 ## 1.0.2
 
 Documentation and packaging release.

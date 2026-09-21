@@ -3,7 +3,6 @@ import 'package:phosphor_icons/phosphor_icons.dart';
 
 import '../layout/kumo_responsive_layout.dart';
 import '../theme/kumo_theme.dart';
-import '../theme/kumo_typography.dart';
 import 'kumo_data_grid_scope.dart';
 import 'kumo_focusable.dart';
 
@@ -105,6 +104,7 @@ class _KumoDataCardState extends State<KumoDataCard>
   @override
   Widget build(BuildContext context) {
     final colors = KumoTheme.of(context);
+    final styles = KumoTheme.textStylesOf(context);
     final canExpand = widget.details.isNotEmpty;
     final isGridCell = KumoDataGridScope.isCellOf(context);
 
@@ -146,7 +146,7 @@ class _KumoDataCardState extends State<KumoDataCard>
                           children: [
                             Text(
                               widget.title,
-                              style: KumoTypography.body.copyWith(
+                              style: styles.body.copyWith(
                                 fontWeight: FontWeight.w600,
                               ),
                               maxLines: 1,
@@ -156,7 +156,7 @@ class _KumoDataCardState extends State<KumoDataCard>
                               const SizedBox(height: 2),
                               Text(
                                 widget.subtitle!,
-                                style: KumoTypography.caption,
+                                style: styles.caption,
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                               ),
@@ -217,6 +217,7 @@ class _Details extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = KumoTheme.of(context);
+    final styles = KumoTheme.textStylesOf(context);
 
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -232,13 +233,13 @@ class _Details extends StatelessWidget {
                   width: _labelWidth,
                   child: Text(
                     details[index].label,
-                    style: KumoTypography.caption.copyWith(
+                    style: styles.caption.copyWith(
                       color: colors.textMuted,
                     ),
                   ),
                 ),
                 Expanded(
-                  child: Text(details[index].value, style: KumoTypography.body),
+                  child: Text(details[index].value, style: styles.body),
                 ),
               ],
             )
@@ -249,12 +250,12 @@ class _Details extends StatelessWidget {
               children: [
                 Text(
                   details[index].label,
-                  style: KumoTypography.caption.copyWith(
+                  style: styles.caption.copyWith(
                     color: colors.textMuted,
                   ),
                 ),
                 const SizedBox(height: 2),
-                Text(details[index].value, style: KumoTypography.body),
+                Text(details[index].value, style: styles.body),
               ],
             ),
         ],
@@ -271,6 +272,8 @@ class _StatusChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final styles = KumoTheme.textStylesOf(context);
+
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -280,7 +283,7 @@ class _StatusChip extends StatelessWidget {
           decoration: BoxDecoration(shape: BoxShape.circle, color: color),
         ),
         const SizedBox(width: 6),
-        Text(label, style: KumoTypography.caption.copyWith(color: color)),
+        Text(label, style: styles.caption.copyWith(color: color)),
       ],
     );
   }

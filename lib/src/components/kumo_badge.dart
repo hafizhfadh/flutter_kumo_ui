@@ -2,7 +2,6 @@ import 'package:flutter/widgets.dart';
 import 'package:phosphor_icons/phosphor_icons.dart';
 
 import '../theme/kumo_theme.dart';
-import '../theme/kumo_typography.dart';
 
 /// The status a [KumoBadge] reports.
 enum KumoBadgeVariant {
@@ -48,6 +47,7 @@ class KumoBadge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = KumoTheme.of(context);
+    final styles = KumoTheme.textStylesOf(context);
     final Color accent = switch (variant) {
       KumoBadgeVariant.info => colors.info,
       KumoBadgeVariant.success => colors.success,
@@ -76,7 +76,7 @@ class KumoBadge extends StatelessWidget {
             label,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            style: KumoTypography.code.copyWith(
+            style: styles.code.copyWith(
               fontSize: 11,
               fontWeight: FontWeight.w700,
               color: accent,

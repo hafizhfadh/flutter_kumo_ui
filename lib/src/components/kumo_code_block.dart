@@ -5,7 +5,6 @@ import 'package:flutter/widgets.dart';
 import 'package:phosphor_icons/phosphor_icons.dart';
 
 import '../theme/kumo_theme.dart';
-import '../theme/kumo_typography.dart';
 import 'kumo_focusable.dart';
 
 /// A read-only code surface with an inline copy affordance.
@@ -64,6 +63,7 @@ class _KumoCodeBlockState extends State<KumoCodeBlock> {
   @override
   Widget build(BuildContext context) {
     final colors = KumoTheme.of(context);
+    final styles = KumoTheme.textStylesOf(context);
     final hasHeader = widget.language != null || widget.showCopyButton;
 
     return Container(
@@ -84,7 +84,7 @@ class _KumoCodeBlockState extends State<KumoCodeBlock> {
                   Expanded(
                     child: Text(
                       widget.language!,
-                      style: KumoTypography.caption,
+                      style: styles.caption,
                     ),
                   )
                 else
@@ -97,7 +97,7 @@ class _KumoCodeBlockState extends State<KumoCodeBlock> {
           ],
           SingleChildScrollView(
             scrollDirection: Axis.horizontal,
-            child: Text(widget.code, style: KumoTypography.code),
+            child: Text(widget.code, style: styles.code),
           ),
         ],
       ),
@@ -114,6 +114,7 @@ class _CopyButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = KumoTheme.of(context);
+    final styles = KumoTheme.textStylesOf(context);
     final Color tint = copied ? colors.success : colors.textSecondary;
 
     return Semantics(
@@ -142,7 +143,7 @@ class _CopyButton extends StatelessWidget {
                 const SizedBox(width: 4),
                 Text(
                   copied ? 'Copied' : 'Copy',
-                  style: KumoTypography.caption.copyWith(color: tint),
+                  style: styles.caption.copyWith(color: tint),
                 ),
               ],
             ),

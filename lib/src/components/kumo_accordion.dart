@@ -2,7 +2,6 @@ import 'package:flutter/widgets.dart';
 import 'package:phosphor_icons/phosphor_icons.dart';
 
 import '../theme/kumo_theme.dart';
-import '../theme/kumo_typography.dart';
 import 'kumo_focusable.dart';
 
 /// A collapsible section with a tappable header.
@@ -68,6 +67,7 @@ class _KumoAccordionState extends State<KumoAccordion>
   @override
   Widget build(BuildContext context) {
     final colors = KumoTheme.of(context);
+    final styles = KumoTheme.textStylesOf(context);
 
     return Container(
       decoration: BoxDecoration(
@@ -105,7 +105,7 @@ class _KumoAccordionState extends State<KumoAccordion>
                     child: Row(
                       children: [
                         Expanded(
-                          child: Text(widget.title, style: KumoTypography.body),
+                          child: Text(widget.title, style: styles.body),
                         ),
                         PhosphorIcon(
                           _isExpanded

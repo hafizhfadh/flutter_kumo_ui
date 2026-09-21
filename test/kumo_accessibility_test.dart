@@ -27,11 +27,20 @@ double _contrastRatio(Color foreground, Color background) {
   return (math.max(a, b) + 0.05) / (math.min(a, b) + 0.05);
 }
 
-/// Every surface a Kumo text token can be painted on.
-const Map<String, Color> _surfaces = <String, Color>{
-  'canvas': Color(0xFF111111),
-  'surface': Color(0xFF1D1D1D),
-  'subtleSurface': Color(0xFF262626),
+/// Every surface a Kumo text token can be painted on, for one scheme.
+Map<String, Color> _surfacesOf(KumoColors colors) => <String, Color>{
+  'canvas': colors.canvas,
+  'surface': colors.surface,
+  'subtleSurface': colors.subtleSurface,
+};
+
+/// The schemes every contrast rule has to hold in.
+///
+/// Both are shipped, so both are verified: a rule that passes in one mode and
+/// fails in the other is a defect, not a caveat.
+const Map<String, KumoColors> _schemes = <String, KumoColors>{
+  'dark': KumoColors.dark(),
+  'light': KumoColors.light(),
 };
 
 /// Hosts [child] inside a real [WidgetsApp], so the keyboard traversal
@@ -68,57 +77,88 @@ bool _hasFocusRing(WidgetTester tester, Finder finder) {
 
 void main() {
   group('WCAG AA color contrast', () {
-    const KumoColors colors = KumoColors();
+    _schemes.forEach((String schemeName, KumoColors colors) {
+      final Map<String, Color> surfaces = _surfacesOf(colors);
 
-    // Every token used to render words. 4.5:1 is the AA floor for normal text.
-    final Map<String, Color> textTokens = <String, Color>{
-      'textPrimary': colors.textPrimary,
-      'textSecondary': colors.textSecondary,
-      'textMuted': colors.textMuted,
-      'primary': colors.primary,
-      'info': colors.info,
-      'success': colors.success,
-      'warning': colors.warning,
-      'dangerText': colors.dangerText,
-    };
+      group(schemeName, () {
+        // Every token used to render words. 4.5:1 is the AA floor for normal
+        // text.
+        final Map<String, Color> textTokens = <String, Color>{
+          'textPrimary': colors.textPrimary,
+          'textSecondary': colors.textSecondary,
+          'textMuted': colors.textMuted,
+          'primary': colors.primary,
+          'info': colors.info,
+          'success': colors.success,
+          'warning': colors.warning,
+          'dangerText': colors.dangerText,
+        };
 
-    test('text tokens clear 4.5:1 on every surface', () {
-      textTokens.forEach((String name, Color token) {
-        _surfaces.forEach((String surfaceName, Color surface) {
+        test('text tokens clear 4.5:1 on every surface', () {
+          textTokens.forEach((String name, Color token) {
+            surfaces.forEach((String surfaceName, Color surface) {
+              expect(
+                _contrastRatio(token, surface),
+                greaterThanOrEqualTo(4.5),
+                reason: '$schemeName $name on $surfaceName must clear 4.5:1',
+              );
+            });
+          });
+        });
+
+        test('the primary button label clears 4.5:1 on the brand fill', () {
           expect(
-            _contrastRatio(token, surface),
+            _contrastRatio(colors.canvas, colors.primary),
             greaterThanOrEqualTo(4.5),
-            reason: '$name on $surfaceName must clear 4.5:1',
+            reason: '$schemeName canvas label on the primary fill must clear '
+                '4.5:1',
           );
         });
-      });
-    });
 
-    test('the primary button label clears 4.5:1 on the brand fill', () {
-      expect(
-        _contrastRatio(colors.canvas, colors.primary),
-        greaterThanOrEqualTo(4.5),
-        reason: 'canvas label on the primary fill must clear 4.5:1',
-      );
-    });
+        test('danger is an indicator tone and clears 3:1 as non-text', () {
+          surfaces.forEach((String surfaceName, Color surface) {
+            expect(
+              _contrastRatio(colors.danger, surface),
+              greaterThanOrEqualTo(3.0),
+              reason: '$schemeName danger on $surfaceName must clear WCAG '
+                  '1.4.11 (3:1)',
+            );
+          });
+        });
 
-    test('danger is an indicator tone and clears 3:1 as non-text', () {
-      _surfaces.forEach((String surfaceName, Color surface) {
-        expect(
-          _contrastRatio(colors.danger, surface),
-          greaterThanOrEqualTo(3.0),
-          reason: 'danger on $surfaceName must clear WCAG 1.4.11 (3:1)',
-        );
-      });
-    });
+        test('the focus ring clears 3:1 on every surface', () {
+          surfaces.forEach((String surfaceName, Color surface) {
+            expect(
+              _contrastRatio(colors.focus, surface),
+              greaterThanOrEqualTo(3.0),
+              reason: '$schemeName focus ring on $surfaceName must clear WCAG '
+                  '1.4.11 (3:1)',
+            );
+          });
+        });
 
-    test('the focus ring clears 3:1 on every surface', () {
-      _surfaces.forEach((String surfaceName, Color surface) {
-        expect(
-          _contrastRatio(colors.focus, surface),
-          greaterThanOrEqualTo(3.0),
-          reason: 'focus ring on $surfaceName must clear WCAG 1.4.11 (3:1)',
-        );
+        // The knob is the highest-contrast neutral, which is what makes it
+        // readable on the resting track in both schemes. Its ratio against the
+        // *active* track is not asserted: the dark scheme has shipped a 2.26:1
+        // knob-on-brand-fill since 1.0.0, and the on/off state is carried by
+        // the track color instead (asserted next).
+        test('the switch knob clears 3:1 against the resting track', () {
+          expect(
+            _contrastRatio(colors.textPrimary, colors.border),
+            greaterThanOrEqualTo(3.0),
+            reason: '$schemeName switch knob on the resting track must clear '
+                'WCAG 1.4.11 (3:1)',
+          );
+        });
+
+        test('the track color change alone signals on versus off', () {
+          expect(
+            _contrastRatio(colors.primary, colors.border),
+            greaterThanOrEqualTo(3.0),
+            reason: '$schemeName active track must stand apart from the '
+                'resting track',
+          );
+        });
       });
     });
   });
