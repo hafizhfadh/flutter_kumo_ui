@@ -67,4 +67,39 @@ class KumoChartColors {
   /// The sequential step for [index], where `0` is the lightest.
   Color sequentialAt(int index) =>
       sequential[index.clamp(0, sequential.length - 1)];
+
+  /// [sequential] reversed, which is the dark-mode magnitude order.
+  static const List<Color> sequentialDark = <Color>[
+    Color(0xFF03254F),
+    Color(0xFF0E58B4),
+    Color(0xFF4290F0),
+    Color(0xFF8EBCF6),
+    Color(0xFFE1EAF4),
+  ];
+
+  /// The magnitude steps for [brightness], ordered so the last entry is the
+  /// largest value.
+  ///
+  /// Light mode darkens with magnitude and dark mode lightens, so the step that
+  /// stands out most is always the biggest number. A choropleth that used
+  /// [sequential] in both schemes would read upside down in the dark.
+  static List<Color> sequentialFor(Brightness brightness) =>
+      brightness == Brightness.dark ? sequentialDark : sequential;
+
+  /// The palette index for [value] across a `min`..`max` domain.
+  ///
+  /// Magnitude has to pick a step by *where it sits on the scale*. Stepping the
+  /// list with a counter instead would cycle the palette, so the fourth region
+  /// parsed would look exactly like the largest one.
+  ///
+  /// A domain with no span, or a value that is not finite, resolves to the most
+  /// prominent step: one number has no distribution to place it in.
+  static int sequentialIndex(double value, double min, double max) {
+    final int steps = sequential.length;
+    if (!value.isFinite || !max.isFinite || !min.isFinite || max <= min) {
+      return steps - 1;
+    }
+    final double position = ((value - min) / (max - min)).clamp(0.0, 1.0);
+    return (position * (steps - 1)).round();
+  }
 }

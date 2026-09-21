@@ -382,6 +382,32 @@ correctly inside a sidebar or split pane. When a widget needs the same decision
 outside a builder, the `KumoResponsiveLayout.isDesktop` helper answers it from
 the window `MediaQuery` instead.
 
+### 5. Chart a stream
+
+Charts are a pure-Dart subsystem under `lib/src/charts/`. A data tick repaints
+only the dynamic layer: the grid rasterises once per layout, and the widget tree
+is not rebuilt for a tick at all.
+
+```dart
+final KumoSeriesBuffer series = KumoSeriesBuffer(capacity: 4096);
+final KumoTimeWindow window = KumoTimeWindow.last(
+  const Duration(minutes: 5),
+  endTimestamp: now,
+);
+final KumoChartController<double> controller = KumoChartController<double>(
+  capacity: 4096,
+);
+
+series.add(now, 42);
+controller.append(now);
+
+KumoTimeseriesChart(series: series, window: window, repaint: controller);
+```
+
+Three families ship — `KumoTimeseriesChart`, `KumoSankeyChart` and
+`KumoGeoMapChart` — plus `KumoChartContainer` for anything else. See
+[the chart reference](skills/flutter-kumo-ui/references/charts.md).
+
 ## Component catalog
 
 **App scaffolding**
@@ -581,7 +607,16 @@ of its own:
 - [ ] Tag Input
 - [ ] Toolbar
 
-**Charts** — Timeseries, Maps, Sankey and Custom Chart are absent entirely.
+**Charts** — a pure-Dart subsystem in `lib/src/charts/`, with no chart package
+underneath, documented in
+[`skills/flutter-kumo-ui/references/charts.md`](skills/flutter-kumo-ui/references/charts.md).
+
+- [x] Timeseries — `KumoTimeseriesChart`, with `KumoTimeWindow`,
+  `KumoSeriesBuffer` and LTTB downsampling
+- [x] Sankey — `KumoSankeyChart`, on `KumoSankeySolver`
+- [x] Maps — `KumoGeoMapChart`, with `KumoGeoJsonParser` and `KumoGeoProjection`
+- [ ] Custom Chart — `KumoChartContainer` and `KumoChartLayer` are the escape
+  hatch today; a dedicated canvas widget is not built yet
 
 **Deliberately excluded**
 
@@ -595,8 +630,10 @@ of its own:
 
 ## Example
 
-A runnable showcase lives in [`example/`](example/lib/main.dart). It exercises
-every public widget at a phone and a desktop viewport.
+A runnable showcase lives in [`example/`](example/lib/main.dart). It exercises the
+component set at a phone and a desktop viewport. The chart subsystem and
+`KumoDrawerScaffold` are not demonstrated there yet, so the API references above
+are what to build from until they are.
 
 The root is a single `KumoApp.router` driving a go_router `RouterConfig`, with a
 `/` gallery and a `/settings` screen, so the theme, router and

@@ -1,10 +1,10 @@
 ---
 name: flutter-kumo-ui
-description: Build Flutter screens with the kumo_ui package, a mobile-first implementation of Cloudflare's Kumo design system built on widgets.dart alone, with light and dark schemes and no Material. Use when the user mentions Kumo, kumo_ui, KumoApp, KumoTheme, KumoColors, a Cloudflare-dashboard look in Flutter, or asks to add screens, widgets, theming, forms, or navigation to an app that depends on kumo_ui.
+description: Build Flutter screens with the kumo_ui package, a mobile-first implementation of Cloudflare's Kumo design system built on widgets.dart alone, with light and dark schemes, a component set, and a pure-Dart chart subsystem, and no Material. Use when the user mentions Kumo, kumo_ui, KumoApp, KumoTheme, KumoColors, a Cloudflare-dashboard look in Flutter, or asks to add screens, widgets, charts, theming, forms, or navigation to an app that depends on kumo_ui.
 license: MIT
 metadata:
   package: kumo_ui
-  version: 1.4.0
+  version: 1.6.0
   repository: https://github.com/hafizhfadh/flutter_kumo_ui
 ---
 
@@ -13,7 +13,8 @@ metadata:
 `kumo_ui` is a Flutter design system: the Cloudflare dashboard's dark, high-density
 visual language (near-black canvas, layered surfaces, hairline borders, one orange
 brand signal) rebuilt from `package:flutter/widgets.dart` primitives. It ships
-light and dark schemes, 20 widgets, and zero Material or Cupertino.
+light and dark schemes, the Cloudflare component set, a pure-Dart chart
+subsystem, and zero Material or Cupertino.
 
 ## The rule that breaks the build
 
@@ -211,8 +212,21 @@ letting it ship.
   scheme. `KumoToastManager.activeCount` is not a listenable, so a UI that shows a
   live count has to rebuild itself after each show or clear.
 
+## Charts
+
+The package ships a pure-Dart chart subsystem under `lib/src/charts/`, with no
+chart package underneath: `KumoTimeseriesChart`, `KumoSankeyChart` and
+`KumoGeoMapChart`, plus `KumoChartContainer` for anything else.
+
+Read [references/charts.md](references/charts.md) before writing any chart. The
+one rule that matters most: a `paint` body allocates nothing, because everything
+it needs is built in `prepare()` once per layout.
+
 ## Reference files
 
+- [references/charts.md](references/charts.md) - the chart subsystem: the layer
+  contract, the repaint split, `KumoChartColors`, and the timeseries, Sankey and
+  GeoJSON families.
 - [references/components.md](references/components.md) - every public constructor,
   parameter, default, enum and static service.
 - [references/theming.md](references/theming.md) - both raw palettes, the semantic

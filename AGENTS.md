@@ -34,13 +34,19 @@ token from `KumoTheme.of(context)`; it never writes a raw `Color(0x...)`.
 - Package imports are limited to `package:flutter/widgets.dart`,
   `package:flutter/services.dart`, `package:flutter/foundation.dart`,
   `package:vector_math/vector_math_64.dart` and
-  `package:phosphor_icons/phosphor_icons.dart`. The `dart:` libraries
-  (`dart:core`, `dart:async`, `dart:math`) are unrestricted.
-  - `vector_math` is permitted **only** in `lib/src/charts/`, for `Matrix4` and
-    `Vector3`. The chart projection engine is pure Dart and imports no Flutter
-    widgets at all, and Flutter re-exports `Matrix4` but not `Vector3`. It is
-    the same math package Flutter itself depends on, so it adds no transitive
-    weight. Do not reach for it elsewhere.
+  `package:phosphor_icons/phosphor_icons.dart`. Every `dart:` SDK library is
+  unrestricted, `dart:typed_data` and `dart:ui` included.
+  - `dart:ui` is how geometry arrives where `widgets.dart` would be dead weight:
+    `Path`, `PathFillType`, `Rect`, `Offset` and `Color` in the GeoJSON parser.
+    Reaching for it inside a widget is a mistake — a widget has a `BuildContext`
+    and should use `widgets.dart`.
+  - `dart:convert` is not used. `KumoGeoJsonParser` takes an already-decoded
+    `Map`, so the package takes no position on how the bytes arrived.
+  - `vector_math` is permitted **only** in `lib/src/charts/`, for `Matrix4`,
+    `Vector3` and the geo projection. That projection is pure math and imports no
+    Flutter widgets at all, and Flutter re-exports `Matrix4` but not `Vector3`.
+    It is the same math package Flutter itself depends on, so it adds no
+    transitive weight. Do not reach for it elsewhere.
   - `phosphor_flutter` is NOT usable: 2.1.0 declares
     `class PhosphorIconData extends IconData`, and `IconData` is a `final class`
     since Flutter 3.43. `phosphor_icons` is the maintained fork that fixes this.
@@ -59,6 +65,12 @@ token from `KumoTheme.of(context)`; it never writes a raw `Color(0x...)`.
 - Every interactive widget keeps a 48px minimum tap target, paints a visible
   focus ring, activates on Enter/Space, and carries `Semantics`.
 - Colour is never the only signal. Pair a status colour with text or an icon.
+- A chart layer's `paint` body allocates nothing. Every `Paint`, `Path`,
+  `TextPainter`, `RRect`, `Rect` and `Offset` is built in `prepare()`, which runs
+  once per layout. A `paint` body that constructs one of those is a bug even when
+  it renders correctly: it is invisible in a screenshot and costs frames the
+  moment data streams. Tokens come from `KumoChartContext`, never from
+  `KumoTheme.of(context)` inside a layer.
 - `///` dartdoc on every public class, member and parameter.
 - A new widget or behaviour ships with tests, and the bundled example
   demonstrates it. The one documented exception is `KumoLoader`: its animation
@@ -100,6 +112,8 @@ token from `KumoTheme.of(context)`; it never writes a raw `Color(0x...)`.
 lib/kumo_ui.dart          public barrel: curated widgets.dart re-export + every component
 lib/src/kumo_app.dart     KumoApp and KumoApp.router
 lib/src/components/       the 35 widgets
+lib/src/charts/           chart subsystem: the layer contract and palette at the
+                          root, then timeseries/, sankey/ and map/ per family
 lib/src/layout/           kKumoBreakpoint, KumoResponsiveLayout
 lib/src/theme/            KumoPalette, KumoLightPalette, KumoColors, KumoTheme, KumoTypography
 example/                  runnable gallery, routed with go_router, single-import
