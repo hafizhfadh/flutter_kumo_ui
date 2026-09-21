@@ -3,7 +3,7 @@
 **A mobile-first Flutter implementation of Cloudflare's Kumo UI design system, built on `package:flutter/widgets.dart` alone.**
 
 [![pub package](https://img.shields.io/pub/v/kumo_ui.svg)](https://pub.dev/packages/kumo_ui)
-![version](https://img.shields.io/badge/version-1.2.0-F38020)
+![version](https://img.shields.io/badge/version-1.3.0-F38020)
 ![platforms](https://img.shields.io/badge/platform-android_%7C_ios_%7C_macos_%7C_linux_%7C_windows-3DDC84)
 ![web](https://img.shields.io/badge/web-not_supported-critical)
 ![flutter](https://img.shields.io/badge/flutter-widgets.dart_only-02569B)
@@ -71,7 +71,7 @@ Add the package and its icon dependency to your `pubspec.yaml`:
 dependencies:
   flutter:
     sdk: flutter
-  kumo_ui: ^1.2.0
+  kumo_ui: ^1.3.0
   phosphor_icons: ^3.0.1
 ```
 
@@ -85,7 +85,7 @@ That single import is enough to build a screen. `kumo_ui` re-exports the core
 Flutter primitives it is itself built from, grouped as:
 
 - **Core framework** — `Widget`, `StatelessWidget`, `StatefulWidget`, `State`,
-  `BuildContext`, `Key`, `ValueKey`, `GlobalKey`.
+  `InheritedWidget`, `BuildContext`, `Key`, `ValueKey`, `GlobalKey`.
 - **Layout** — `Column`, `Row`, `Stack`, `Positioned`, `Expanded`, `Flexible`,
   `Spacer`, `Container`, `SizedBox`, `Padding`, `Align`, `Center`,
   `ConstrainedBox`, `BoxConstraints`, `Wrap`, `CrossAxisAlignment`,
@@ -104,6 +104,9 @@ Flutter primitives it is itself built from, grouped as:
 - **Navigation and scaffolding** — `runApp`, `WidgetsApp`, `Navigator`,
   `PageRouteBuilder`, `RouteSettings`, `WidgetBuilder`, `MediaQuery`,
   `LayoutBuilder`, `SafeArea`, `Brightness`.
+- **Router (Navigator 2.0)** — `RouteInformation`, `RouteInformationProvider`,
+  `RouteInformationParser`, `RouterConfig`, `RouterDelegate`,
+  `BackButtonDispatcher`.
 
 Two things worth knowing about those re-exports:
 
@@ -212,6 +215,42 @@ immediately instead of rendering an unofficial Kumo surface. Underneath it is a
 `KumoTheme` wrapping a `WidgetsApp` — reach for those two directly only when you
 need the theme placed *below* the navigator, which is something the packaged
 components already handle for themselves.
+
+#### Routing with Navigator 2.0
+
+`KumoApp.router` is the `MaterialApp.router` equivalent, so go_router and
+auto_route plug in the way they already do:
+
+```dart
+final router = GoRouter(
+  routes: <RouteBase>[
+    GoRoute(path: '/', builder: (context, state) => const HomeScreen()),
+  ],
+);
+
+KumoApp.router(routerConfig: router)
+```
+
+A raw `RouterDelegate` and `RouteInformationParser` work too, mirroring
+`WidgetsApp.router`. `home`, `routes`, `initialRoute`, `onGenerateRoute` and
+`navigatorKey` are deliberately absent from this constructor: a router owns the
+navigator, and `WidgetsApp.router` asserts they cannot be combined.
+
+Two things worth knowing before you pick a router:
+
+- **go_router stays Material-free here.** It chooses its page type from the app
+  it finds itself in — `MaterialPage` under a `MaterialApp`, `NoTransitionPage`
+  under a plain `WidgetsApp`. Under `KumoApp.router` no Material widget enters
+  your tree. The trade-off is that routes do not animate.
+- **auto_route needs a nudge.** `RootStackRouter.config()` is a `RouterConfig`,
+  so it plugs in directly, but auto_route's default `RouteType.material()`
+  renders a `MaterialPage`. Pick a non-Material route type if the zero-Material
+  guarantee matters to you.
+
+One router-specific gotcha worth stating plainly: a route builder runs once per
+location, not once per rebuild of your app's `State`. Anything a routed screen
+needs from the app — the way the example shares its theme mode — has to reach it
+through `context`, not a constructor argument.
 
 ### 2. Build a mobile list with `KumoListGroup` and `KumoListItem`
 
@@ -351,6 +390,9 @@ the window `MediaQuery` instead.
   `KumoThemeMode`, then wraps `KumoTheme` around a `WidgetsApp` with a derived
   root text style and task-switcher color. The `MaterialApp` equivalent,
   without Material.
+- `KumoApp.router` — the same, but the navigator comes from a `RouterConfig`
+  (go_router, auto_route) or a raw `RouterDelegate` plus
+  `RouteInformationParser`. The `MaterialApp.router` equivalent.
 
 **Form and input**
 
@@ -464,14 +506,19 @@ the window `MediaQuery` instead.
 ## Example
 
 A runnable showcase lives in [`example/`](example/lib/main.dart). It exercises
-every public widget at a phone and a desktop viewport, and imports only
-`package:kumo_ui/kumo_ui.dart` plus the Phosphor glyph constants.
+every public widget at a phone and a desktop viewport.
 
-The root is a single `KumoApp`, so the theme, navigator and platform-brightness
-wiring all live in one place. A **System / Light / Dark** selector at the top of
-the screen switches the scheme live by changing `KumoApp.mode`. The `KumoSelect`
-example is what surfaces `KumoBottomSheet` on phones, and a direct
-`KumoBottomSheet.show` section sits beside it.
+The root is a single `KumoApp.router` driving a go_router `RouterConfig`, with a
+`/` gallery and a `/settings` screen, so the theme, router and
+platform-brightness wiring all live in one place. It imports `kumo_ui`,
+`phosphor_icons` and `go_router`, and nothing else.
+
+The **System / Light / Dark** selector switches the scheme live by changing
+`KumoApp.mode`. Because a route builder does not re-run when the app rebuilds,
+the mode reaches the pages through a small `InheritedWidget` rather than a
+constructor — the pattern any routed app needs. The `KumoSelect` example is what
+surfaces `KumoBottomSheet` on phones, and a direct `KumoBottomSheet.show`
+section sits beside it.
 
 ```sh
 cd example

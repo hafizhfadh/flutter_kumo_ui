@@ -30,6 +30,9 @@ import 'theme/kumo_theme.dart';
 ///
 /// The widget asserts the platform boundary once, on mount, so a Flutter Web
 /// build fails immediately instead of rendering an unofficial Kumo surface.
+///
+/// Use [KumoApp.router] instead when the app routes with Navigator 2.0 — a
+/// `RouterConfig` from go_router or auto_route, or a raw `RouterDelegate`.
 class KumoApp extends StatefulWidget {
   /// Creates a Kumo application.
   const KumoApp({
@@ -46,7 +49,44 @@ class KumoApp extends StatefulWidget {
     this.navigatorKey,
     this.builder,
     this.debugShowCheckedModeBanner = true,
-  });
+  })  : _isRouter = false,
+        routeInformationProvider = null,
+        routeInformationParser = null,
+        routerDelegate = null,
+        routerConfig = null,
+        backButtonDispatcher = null;
+
+  /// Creates a Kumo application whose navigator is driven by a router.
+  ///
+  /// The `MaterialApp.router` equivalent, for Navigator 2.0. Pass a
+  /// [routerConfig] — which is what go_router's `GoRouter` and auto_route's
+  /// `RootStackRouter.config()` both are — or drive a raw [routerDelegate]
+  /// together with a [routeInformationParser]. [routerConfig] is mutually
+  /// exclusive with the other three, matching `WidgetsApp.router`'s contract.
+  ///
+  /// `home`, `routes`, `initialRoute`, `onGenerateRoute` and `navigatorKey` are
+  /// deliberately absent: a router owns the navigator, so combining them is an
+  /// error rather than an option.
+  const KumoApp.router({
+    super.key,
+    this.title = '',
+    this.light = const KumoColors.light(),
+    this.dark = const KumoColors.dark(),
+    this.mode = KumoThemeMode.system,
+    this.routeInformationProvider,
+    this.routeInformationParser,
+    this.routerDelegate,
+    this.routerConfig,
+    this.backButtonDispatcher,
+    this.builder,
+    this.debugShowCheckedModeBanner = true,
+  })  : _isRouter = true,
+        home = null,
+        routes = const <String, WidgetBuilder>{},
+        initialRoute = null,
+        onGenerateRoute = null,
+        onUnknownRoute = null,
+        navigatorKey = null;
 
   /// A one-line description of the app, used by the host operating system.
   final String title;
@@ -83,6 +123,25 @@ class KumoApp extends StatefulWidget {
 
   /// Whether to paint the debug banner in debug builds.
   final bool debugShowCheckedModeBanner;
+
+  /// Restores and reports the app's route as a URL. Router path only.
+  final RouteInformationProvider? routeInformationProvider;
+
+  /// Parses [RouteInformation] into the app's routing type. Router path only.
+  final RouteInformationParser<Object>? routeInformationParser;
+
+  /// Owns the app's pages. Router path only.
+  final RouterDelegate<Object>? routerDelegate;
+
+  /// Bundles a provider, parser, delegate and back-button dispatcher into one
+  /// value, which is what go_router and auto_route hand over. Router path only.
+  final RouterConfig<Object>? routerConfig;
+
+  /// Handles the platform back gesture and button. Router path only.
+  final BackButtonDispatcher? backButtonDispatcher;
+
+  /// Whether this app routes with Navigator 2.0 instead of `home`/`routes`.
+  final bool _isRouter;
 
   @override
   State<KumoApp> createState() => _KumoAppState();
@@ -129,35 +188,49 @@ class _KumoAppState extends State<KumoApp> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
     final KumoColors colors = _colors;
+    final KumoTextStyles styles = KumoTypography.resolve(colors);
 
-    return KumoTheme(
-      colors: colors,
-      child: WidgetsApp(
-        title: widget.title,
-        color: colors.canvas,
-        textStyle: KumoTypography.resolve(colors).body,
-        debugShowCheckedModeBanner: widget.debugShowCheckedModeBanner,
-        navigatorKey: widget.navigatorKey,
-        home: widget.home,
-        routes: widget.routes,
-        initialRoute: widget.initialRoute,
-        onGenerateRoute: widget.onGenerateRoute,
-        onUnknownRoute: widget.onUnknownRoute,
-        builder: widget.builder,
-        // WidgetsApp asserts that one of `builder`, `onGenerateRoute` or
-        // `pageRouteBuilder` is supplied, so KumoApp always provides the last
-        // one. It is what gives every pushed route its transition.
-        pageRouteBuilder: <T>(RouteSettings settings, WidgetBuilder builder) =>
-            PageRouteBuilder<T>(
-              settings: settings,
-              pageBuilder:
-                  (
-                    BuildContext context,
-                    Animation<double> animation,
-                    Animation<double> secondaryAnimation,
-                  ) => builder(context),
-            ),
-      ),
-    );
+    final Widget app = widget._isRouter
+        ? WidgetsApp.router(
+            title: widget.title,
+            color: colors.canvas,
+            textStyle: styles.body,
+            debugShowCheckedModeBanner: widget.debugShowCheckedModeBanner,
+            builder: widget.builder,
+            routeInformationProvider: widget.routeInformationProvider,
+            routeInformationParser: widget.routeInformationParser,
+            routerDelegate: widget.routerDelegate,
+            routerConfig: widget.routerConfig,
+            backButtonDispatcher: widget.backButtonDispatcher,
+          )
+        : WidgetsApp(
+            title: widget.title,
+            color: colors.canvas,
+            textStyle: styles.body,
+            debugShowCheckedModeBanner: widget.debugShowCheckedModeBanner,
+            navigatorKey: widget.navigatorKey,
+            home: widget.home,
+            routes: widget.routes,
+            initialRoute: widget.initialRoute,
+            onGenerateRoute: widget.onGenerateRoute,
+            onUnknownRoute: widget.onUnknownRoute,
+            builder: widget.builder,
+            // WidgetsApp asserts that one of `builder`, `onGenerateRoute` or
+            // `pageRouteBuilder` is supplied, so KumoApp always provides the
+            // last one. It is what gives every pushed route its transition.
+            pageRouteBuilder:
+                <T>(RouteSettings settings, WidgetBuilder builder) =>
+                    PageRouteBuilder<T>(
+                      settings: settings,
+                      pageBuilder:
+                          (
+                            BuildContext context,
+                            Animation<double> animation,
+                            Animation<double> secondaryAnimation,
+                          ) => builder(context),
+                    ),
+          );
+
+    return KumoTheme(colors: colors, child: app);
   }
 }

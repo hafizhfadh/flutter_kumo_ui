@@ -1,3 +1,26 @@
+## 1.3.0
+
+Navigator 2.0 support: `KumoApp.router`.
+
+- `KumoApp.router` is the `MaterialApp.router` equivalent. It drives
+  `WidgetsApp.router` from a `RouterConfig`, or from a raw `RouterDelegate` plus
+  `RouteInformationParser`, and keeps the scheme resolution, theme wrapper and
+  platform-brightness observer `KumoApp` already had. go_router and auto_route
+  both hand over a `RouterConfig`, so they plug in unchanged.
+- `home`, `routes`, `initialRoute`, `onGenerateRoute` and `navigatorKey` are
+  absent from that constructor, mirroring `MaterialApp.router`: a router owns the
+  navigator, and `WidgetsApp.router` asserts they cannot be combined.
+- Re-export the router types (`RouterConfig`, `RouterDelegate`,
+  `RouteInformationParser`, `RouteInformationProvider`, `BackButtonDispatcher`,
+  `RouteInformation`) and `InheritedWidget`, so both paths stay usable from the
+  single import.
+- go_router stays Material-free under `KumoApp.router`: it chooses its page type
+  from the app it finds itself in and falls back to `NoTransitionPage` under a
+  plain `WidgetsApp`. Asserted by test rather than assumed.
+- The bundled example is now a routed app: `KumoApp.router` with `/` and
+  `/settings`. Its theme mode reaches the pages through an `InheritedWidget`,
+  because a route builder does not re-run when the app rebuilds.
+
 ## 1.2.0
 
 `KumoApp`, the app entry point.

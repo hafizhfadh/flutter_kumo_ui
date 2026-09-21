@@ -1,6 +1,7 @@
 // Everything Flutter-facing comes from kumo_ui: no `package:flutter/widgets.dart`
 // import is needed. Only the Phosphor glyph constants come from elsewhere,
 // because that is where the icon names are declared.
+import 'package:go_router/go_router.dart';
 import 'package:kumo_ui/kumo_ui.dart';
 import 'package:phosphor_icons/phosphor_icons.dart';
 
@@ -25,13 +26,36 @@ class KumoExampleApp extends StatefulWidget {
 class _KumoExampleAppState extends State<KumoExampleApp> {
   KumoThemeMode _mode = KumoThemeMode.system;
 
+  // Built once: a router holds the current location, so recreating it on every
+  // rebuild would throw that state away. Note that the routes take no
+  // arguments: a route builder runs once per location, not once per rebuild of
+  // this State, so anything a page needs has to reach it through context.
+  late final GoRouter _router = GoRouter(
+    initialLocation: '/',
+    routes: <RouteBase>[
+      GoRoute(
+        path: '/',
+        builder: (BuildContext context, GoRouterState state) => const KumoExampleHome(),
+      ),
+      GoRoute(
+        path: '/settings',
+        builder: (BuildContext context, GoRouterState state) => const KumoExampleSettings(),
+      ),
+    ],
+  );
+
+  void _setMode(KumoThemeMode mode) => setState(() => _mode = mode);
+
   @override
   Widget build(BuildContext context) {
-    return KumoApp(
+    return KumoApp.router(
       title: 'Kumo UI',
       mode: _mode,
       debugShowCheckedModeBanner: false,
-      home: KumoExampleHome(mode: _mode, onModeChanged: (KumoThemeMode mode) => setState(() => _mode = mode)),
+      routerConfig: _router,
+      // Sits above the router's pages, so a routed screen can read and change
+      // the mode. Handing it to a route builder instead would go stale.
+      builder: (BuildContext context, Widget? child) => _ModeScope(mode: _mode, onChanged: _setMode, child: child!),
     );
   }
 }
@@ -39,13 +63,7 @@ class _KumoExampleAppState extends State<KumoExampleApp> {
 /// Scrollable screen exercising every component in the library.
 class KumoExampleHome extends StatefulWidget {
   /// Creates the showcase screen.
-  const KumoExampleHome({super.key, required this.mode, required this.onModeChanged});
-
-  /// The mode the app is currently in.
-  final KumoThemeMode mode;
-
-  /// Called when the theme selector reports a new mode.
-  final ValueChanged<KumoThemeMode> onModeChanged;
+  const KumoExampleHome({super.key});
 
   @override
   State<KumoExampleHome> createState() => _KumoExampleHomeState();
@@ -149,6 +167,7 @@ class _KumoExampleHomeState extends State<KumoExampleHome> {
   Widget build(BuildContext context) {
     final colors = KumoTheme.of(context);
     final styles = KumoTheme.textStylesOf(context);
+    final _ModeScope modeScope = _ModeScope.of(context);
     final bool isLight = colors.brightness == Brightness.light;
 
     final edgeRules = KumoListGroup(
@@ -220,11 +239,21 @@ class _KumoExampleHomeState extends State<KumoExampleHome> {
                   KumoThemeMode.light: 'Light',
                   KumoThemeMode.dark: 'Dark',
                 },
-                selected: widget.mode,
-                onSelected: widget.onModeChanged,
+                selected: modeScope.mode,
+                onSelected: modeScope.onChanged,
               ),
               const SizedBox(height: 10),
               Text('Painting the ${isLight ? 'light' : 'dark'} scheme.', style: styles.caption),
+              const SizedBox(height: 28),
+              const _SectionLabel('Navigation'),
+              KumoButton(
+                label: 'Open settings',
+                variant: KumoButtonVariant.secondary,
+                icon: PhosphorIconsRegular.arrowRight,
+                onPressed: () => context.push('/settings'),
+              ),
+              const SizedBox(height: 10),
+              Text('Pushed onto the go_router stack.', style: styles.caption),
               const SizedBox(height: 28),
               const _SectionLabel('Segmented control'),
               KumoSegmentedControl<String>(
@@ -500,6 +529,84 @@ class _KumoExampleHomeState extends State<KumoExampleHome> {
   }
 
   static void _noop(bool _) {}
+}
+
+/// The second route, reached by pushing '/settings' rather than a Navigator 1.0
+/// route, which is what makes this a Navigator 2.0 app.
+class KumoExampleSettings extends StatelessWidget {
+  /// Creates the settings screen.
+  const KumoExampleSettings({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = KumoTheme.of(context);
+    final styles = KumoTheme.textStylesOf(context);
+
+    return ColoredBox(
+      color: colors.canvas,
+      child: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: <Widget>[
+              KumoHeader(
+                title: 'Settings',
+                subtitle: 'Routed at /settings.',
+                leading: KumoButton(
+                  label: 'Back',
+                  variant: KumoButtonVariant.secondary,
+                  icon: PhosphorIconsRegular.arrowLeft,
+                  // A deep link can land here with nothing to pop, so fall back
+                  // to the gallery instead of throwing.
+                  onPressed: () => context.canPop() ? context.pop() : context.go('/'),
+                ),
+              ),
+              const SizedBox(height: 28),
+              const _SectionLabel('Notifications'),
+              const KumoListGroup(
+                title: 'Deploy alerts',
+                children: <Widget>[
+                  KumoListItem(title: 'Deploy finished', subtitle: 'Push and email'),
+                  KumoListItem(title: 'Weekly digest', subtitle: 'Mondays, 09:00'),
+                ],
+              ),
+              const SizedBox(height: 28),
+              const _SectionLabel('Route'),
+              Text('This screen is a page of the same RouterConfig.', style: styles.bodyMuted),
+              const SizedBox(height: 12),
+              const KumoCodeBlock(code: "context.push('/settings')", language: 'dart'),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Carries the app's theme mode to routed pages.
+///
+/// The app owns the mode, but the pages are built by the router, so they cannot
+/// receive it as a constructor argument — a route builder runs once per
+/// location. Passing it down through context is what keeps the selector in sync
+/// after the mode changes.
+class _ModeScope extends InheritedWidget {
+  const _ModeScope({required this.mode, required this.onChanged, required super.child});
+
+  /// The mode the app is currently painting.
+  final KumoThemeMode mode;
+
+  /// Called when a screen reports a new mode.
+  final ValueChanged<KumoThemeMode> onChanged;
+
+  static _ModeScope of(BuildContext context) {
+    final _ModeScope? scope = context.dependOnInheritedWidgetOfExactType<_ModeScope>();
+    assert(scope != null, 'No _ModeScope above this widget.');
+    return scope!;
+  }
+
+  @override
+  bool updateShouldNotify(_ModeScope oldWidget) => mode != oldWidget.mode || onChanged != oldWidget.onChanged;
 }
 
 class _SectionLabel extends StatelessWidget {

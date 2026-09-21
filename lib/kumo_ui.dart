@@ -27,6 +27,7 @@ export 'package:flutter/widgets.dart'
         StatelessWidget,
         StatefulWidget,
         State,
+        InheritedWidget,
         BuildContext,
         Key,
         ValueKey,
@@ -98,7 +99,15 @@ export 'package:flutter/widgets.dart'
         WidgetBuilder,
         MediaQuery,
         LayoutBuilder,
-        SafeArea;
+        SafeArea,
+        // Router (Navigator 2.0), so a KumoApp.router can be typed with the
+        // single import
+        RouteInformation,
+        RouteInformationProvider,
+        RouteInformationParser,
+        RouterConfig,
+        RouterDelegate,
+        BackButtonDispatcher;
 
 // ---------------------------------------------------------------------------
 // App entry point

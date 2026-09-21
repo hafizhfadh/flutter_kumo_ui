@@ -12,6 +12,7 @@ void _setViewport(WidgetTester tester, Size size) {
 /// Section headings that prove every showcase block rendered.
 const List<String> _sectionLabels = <String>[
   'Theme',
+  'Navigation',
   'Segmented control',
   'Text input',
   'Toggle',
@@ -220,6 +221,29 @@ void main() {
 
     await _revealAndTap(tester, find.text('Light'));
     expect(canvas(), const KumoColors.light().canvas);
+
+    // The selector itself shows the choice, which only holds if `mode` reaches
+    // the routed page and not just the theme.
+    expect(
+      tester.widget<Text>(find.text('Light')).style?.color,
+      const KumoColors.light().primary,
+    );
+  });
+
+  testWidgets('routes to a second screen and back', (tester) async {
+    _setViewport(tester, const Size(390, 844));
+
+    await tester.pumpWidget(const KumoExampleApp());
+    await tester.pumpAndSettle();
+
+    await _revealAndTap(tester, find.text('Open settings'));
+    expect(find.text('Routed at /settings.'), findsOneWidget);
+
+    await _revealAndTap(tester, find.text('Back'));
+    expect(
+      find.text('A widgets-only take on the Cloudflare dashboard.'),
+      findsOneWidget,
+    );
   });
 
   testWidgets('the bottom sheet opens and reports the chosen action', (
