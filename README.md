@@ -3,7 +3,7 @@
 **A mobile-first Flutter implementation of Cloudflare's Kumo UI design system, built on `package:flutter/widgets.dart` alone.**
 
 [![pub package](https://img.shields.io/pub/v/kumo_ui.svg)](https://pub.dev/packages/kumo_ui)
-![version](https://img.shields.io/badge/version-1.1.0-F38020)
+![version](https://img.shields.io/badge/version-1.2.0-F38020)
 ![platforms](https://img.shields.io/badge/platform-android_%7C_ios_%7C_macos_%7C_linux_%7C_windows-3DDC84)
 ![web](https://img.shields.io/badge/web-not_supported-critical)
 ![flutter](https://img.shields.io/badge/flutter-widgets.dart_only-02569B)
@@ -71,7 +71,7 @@ Add the package and its icon dependency to your `pubspec.yaml`:
 dependencies:
   flutter:
     sdk: flutter
-  kumo_ui: ^1.1.0
+  kumo_ui: ^1.2.0
   phosphor_icons: ^3.0.1
 ```
 
@@ -103,8 +103,7 @@ Flutter primitives it is itself built from, grouped as:
   `SizeTransition`, `AnimationController`.
 - **Navigation and scaffolding** — `runApp`, `WidgetsApp`, `Navigator`,
   `PageRouteBuilder`, `RouteSettings`, `WidgetBuilder`, `MediaQuery`,
-  `LayoutBuilder`, `SafeArea`, `WidgetsBinding`, `WidgetsBindingObserver`,
-  `Brightness`.
+  `LayoutBuilder`, `SafeArea`, `Brightness`.
 
 Two things worth knowing about those re-exports:
 
@@ -128,18 +127,26 @@ target; the package will throw at runtime if you do.
 
 ## Color modes
 
-Both schemes ship in the box. A `KumoColors` describes **one** scheme; the app
-decides which one is in scope and hands it to `KumoTheme`. There is no mode
-state inside the library, so a theme can follow the platform, a stored
-preference or a switch without fighting the package for control.
+Both schemes ship in the box — `KumoColors.dark()` and `KumoColors.light()`.
+`KumoThemeMode` picks between them, and `KumoApp` is the widget that applies the
+result:
 
 ```dart
-// Pick a scheme from a brightness...
+KumoApp(mode: KumoThemeMode.system, home: const HomeScreen())
+```
+
+`system` is the default, so an app follows the platform setting and repaints
+when it changes. `KumoTheme` itself stays neutral and renders whatever
+`KumoColors` it is handed, which is what lets a single screen pin a scheme
+without touching the app.
+
+```dart
+// Resolve a scheme from a brightness...
 final colors = KumoColors.of(MediaQuery.platformBrightnessOf(context));
 
 // ...or name one directly.
 const light = KumoColors.light();
-const dark = KumoColors.dark();       // same as `const KumoColors()`
+const dark = KumoColors.dark();       // same tokens as `const KumoColors()`
 ```
 
 | | Canvas | Surface | Recessed | Border | Text | Brand |
@@ -174,51 +181,37 @@ in hand.
 
 ## Usage
 
-### 1. Wrap your app in `KumoTheme` and `WidgetsApp`
+### 1. Start with `KumoApp`
 
-`KumoTheme` supplies the color scheme to every descendant, and `WidgetsApp`
-provides the navigator, text direction and `MediaQuery` that Kumo widgets rely
-on — without pulling in Material. The theme takes a `KumoColors`; which scheme
-it gets is the app's call.
+`KumoApp` is the `MaterialApp` equivalent: one widget that wires the color
+scheme, the navigator, the root text style and the platform brightness. Nothing
+else is needed to get a screen on device.
 
 ```dart
 import 'package:kumo_ui/kumo_ui.dart';
 
 void main() {
-  // Fails fast on Flutter Web with a clear UnsupportedError.
-  KumoTheme.ensureSupportedPlatform();
-  runApp(const MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    // Follow the platform, or hand over `KumoColors.dark()` /
-    // `KumoColors.light()` to pin one scheme.
-    final brightness =
-        WidgetsBinding.instance.platformDispatcher.platformBrightness;
-    final colors = KumoColors.of(brightness);
-
-    return KumoTheme(
-      colors: colors,
-      child: WidgetsApp(
-        title: 'Kumo',
-        color: colors.canvas,
-        textStyle: KumoTypography.resolve(colors).body,
-        pageRouteBuilder: <T>(RouteSettings settings, WidgetBuilder builder) =>
-            PageRouteBuilder<T>(
-              settings: settings,
-              pageBuilder: (context, animation, secondaryAnimation) =>
-                  builder(context),
-            ),
-        home: const HomeScreen(),
-      ),
-    );
-  }
+  runApp(KumoApp(home: const HomeScreen()));
 }
 ```
+
+It follows the platform setting by default. Pin a scheme, or replace either one,
+when the app should own that decision:
+
+```dart
+KumoApp(
+  title: 'Kumo',
+  mode: KumoThemeMode.dark,
+  dark: KumoColors.dark(primary: brandOrange),
+  home: const HomeScreen(),
+)
+```
+
+`KumoApp` asserts the platform boundary on mount, so a Flutter Web build fails
+immediately instead of rendering an unofficial Kumo surface. Underneath it is a
+`KumoTheme` wrapping a `WidgetsApp` — reach for those two directly only when you
+need the theme placed *below* the navigator, which is something the packaged
+components already handle for themselves.
 
 ### 2. Build a mobile list with `KumoListGroup` and `KumoListItem`
 
@@ -352,6 +345,13 @@ the window `MediaQuery` instead.
 
 ## Component catalog
 
+**App scaffolding**
+
+- `KumoApp` — the whole app in one widget: resolves the scheme from
+  `KumoThemeMode`, then wraps `KumoTheme` around a `WidgetsApp` with a derived
+  root text style and task-switcher color. The `MaterialApp` equivalent,
+  without Material.
+
 **Form and input**
 
 - `KumoInput` — single-line text field with label, placeholder, prefix/suffix
@@ -413,6 +413,7 @@ the window `MediaQuery` instead.
 - `KumoButtonVariant` — `primary`, `secondary`.
 - `KumoBadgeVariant` — `info`, `success`, `warning`, `error`, `neutral`.
 - `KumoToastKind` — `info`, `success`, `warning`, `error`.
+- `KumoThemeMode` — `system`, `light`, `dark`.
 
 **Theming**
 
@@ -466,12 +467,11 @@ A runnable showcase lives in [`example/`](example/lib/main.dart). It exercises
 every public widget at a phone and a desktop viewport, and imports only
 `package:kumo_ui/kumo_ui.dart` plus the Phosphor glyph constants.
 
-A **System / Light / Dark** selector at the top of the screen switches the
-scheme live. System mode reads
-`WidgetsBinding.instance.platformDispatcher.platformBrightness` and rebuilds
-`KumoTheme` with the matching `KumoColors`, which is the same wiring an app
-would use. The `KumoSelect` example is what surfaces `KumoBottomSheet` on
-phones, and a direct `KumoBottomSheet.show` section sits beside it.
+The root is a single `KumoApp`, so the theme, navigator and platform-brightness
+wiring all live in one place. A **System / Light / Dark** selector at the top of
+the screen switches the scheme live by changing `KumoApp.mode`. The `KumoSelect`
+example is what surfaces `KumoBottomSheet` on phones, and a direct
+`KumoBottomSheet.show` section sits beside it.
 
 ```sh
 cd example

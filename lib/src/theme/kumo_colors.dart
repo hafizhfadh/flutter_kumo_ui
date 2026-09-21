@@ -166,8 +166,30 @@ class KumoColors {
     this.brightness = Brightness.dark,
   });
 
-  /// The dark scheme, with no token overrides.
-  const KumoColors.dark() : this();
+  /// The dark scheme, defaulting every value to [KumoPalette].
+  ///
+  /// Identical to the unnamed constructor, which carries the dark defaults for
+  /// backward compatibility. Both exist so the two schemes read as peers:
+  /// `KumoColors.dark(primary: brand)` and `KumoColors.light(primary: brand)`
+  /// are the same shape.
+  const KumoColors.dark({
+    this.canvas = KumoPalette.gray0,
+    this.surface = KumoPalette.gray1,
+    this.subtleSurface = KumoPalette.gray2,
+    this.border = KumoPalette.gray3,
+    this.primary = KumoPalette.orange5,
+    this.focus = const Color(0xFFE9E9E9),
+    this.textPrimary = KumoPalette.gray9,
+    this.textSecondary = KumoPalette.gray6,
+    this.textMuted = KumoPalette.gray5,
+    this.info = KumoPalette.blue5,
+    this.success = KumoPalette.green5,
+    this.warning = KumoPalette.amber5,
+    this.danger = KumoPalette.red5,
+    this.dangerText = const Color(0xFFF87171),
+    this.scrim = const Color(0x99000000),
+    this.brightness = Brightness.dark,
+  });
 
   /// The light scheme, defaulting every value to [KumoLightPalette].
   const KumoColors.light({

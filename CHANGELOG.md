@@ -1,3 +1,21 @@
+## 1.2.0
+
+`KumoApp`, the app entry point.
+
+- `KumoApp` collapses the theme and the `WidgetsApp` wiring into one widget, the
+  way `MaterialApp` does, and derives the root text style and the task-switcher
+  color from the scheme in scope. `runApp(KumoApp(home: HomeScreen()))` is a
+  complete app, with no nested theming.
+- `KumoThemeMode` (`system`, `light`, `dark`) picks the scheme and defaults to
+  `system`, so an app follows the platform setting and repaints when it changes.
+- `KumoColors.dark()` now accepts the same per-token overrides as
+  `KumoColors.light()`, so the two schemes read as peers.
+- `WidgetsBinding` and `WidgetsBindingObserver` are no longer re-exported. They
+  were added in 1.1.0 for the example's manual brightness wiring, which
+  `KumoApp` now owns; both stay available from `package:flutter/widgets.dart`.
+  `Brightness` and `Builder` remain in the barrel.
+- The bundled example is now a single `KumoApp`.
+
 ## 1.1.0
 
 Light and dark color modes.

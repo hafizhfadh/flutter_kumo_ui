@@ -10,25 +10,10 @@ void main() {
   runApp(const KumoExampleApp());
 }
 
-/// How the example picks between the light and the dark scheme.
-///
-/// The library ships both schemes but no mode machinery of its own, so the
-/// choice lives here, which is what an app would do too.
-enum ExampleThemeMode {
-  /// Follow the platform setting.
-  system,
-
-  /// Always the light scheme.
-  light,
-
-  /// Always the dark scheme.
-  dark,
-}
-
 /// Root of the Kumo UI showcase.
 ///
-/// Uses [WidgetsApp] so the entire example stays free of Material, matching the
-/// library's own constraint.
+/// Uses [KumoApp] so the entire example stays free of Material, and so the
+/// theme, navigator and platform-brightness wiring live in one place.
 class KumoExampleApp extends StatefulWidget {
   /// Creates the showcase app.
   const KumoExampleApp({super.key});
@@ -37,59 +22,18 @@ class KumoExampleApp extends StatefulWidget {
   State<KumoExampleApp> createState() => _KumoExampleAppState();
 }
 
-class _KumoExampleAppState extends State<KumoExampleApp>
-    with WidgetsBindingObserver {
-  ExampleThemeMode _mode = ExampleThemeMode.system;
-
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addObserver(this);
-  }
-
-  @override
-  void dispose() {
-    WidgetsBinding.instance.removeObserver(this);
-    super.dispose();
-  }
-
-  @override
-  void didChangePlatformBrightness() {
-    // Only system mode follows the platform; an explicit choice stays put.
-    if (_mode == ExampleThemeMode.system) {
-      setState(() {});
-    }
-  }
-
-  Brightness get _effectiveBrightness => switch (_mode) {
-    ExampleThemeMode.system =>
-      WidgetsBinding.instance.platformDispatcher.platformBrightness,
-    ExampleThemeMode.light => Brightness.light,
-    ExampleThemeMode.dark => Brightness.dark,
-  };
+class _KumoExampleAppState extends State<KumoExampleApp> {
+  KumoThemeMode _mode = KumoThemeMode.system;
 
   @override
   Widget build(BuildContext context) {
-    final KumoColors colors = KumoColors.of(_effectiveBrightness);
-
-    return KumoTheme(
-      colors: colors,
-      child: WidgetsApp(
-        title: 'Kumo UI',
-        color: colors.canvas,
-        textStyle: KumoTypography.resolve(colors).body,
-        debugShowCheckedModeBanner: false,
-        pageRouteBuilder: <T>(RouteSettings settings, WidgetBuilder builder) =>
-            PageRouteBuilder<T>(
-              settings: settings,
-              pageBuilder: (context, animation, secondaryAnimation) =>
-                  builder(context),
-            ),
-        home: KumoExampleHome(
-          mode: _mode,
-          onModeChanged: (ExampleThemeMode mode) =>
-              setState(() => _mode = mode),
-        ),
+    return KumoApp(
+      title: 'Kumo UI',
+      mode: _mode,
+      debugShowCheckedModeBanner: false,
+      home: KumoExampleHome(
+        mode: _mode,
+        onModeChanged: (KumoThemeMode mode) => setState(() => _mode = mode),
       ),
     );
   }
@@ -105,10 +49,10 @@ class KumoExampleHome extends StatefulWidget {
   });
 
   /// The mode the app is currently in.
-  final ExampleThemeMode mode;
+  final KumoThemeMode mode;
 
   /// Called when the theme selector reports a new mode.
-  final ValueChanged<ExampleThemeMode> onModeChanged;
+  final ValueChanged<KumoThemeMode> onModeChanged;
 
   @override
   State<KumoExampleHome> createState() => _KumoExampleHomeState();
@@ -287,11 +231,11 @@ class _KumoExampleHomeState extends State<KumoExampleHome> {
               ),
               const SizedBox(height: 28),
               const _SectionLabel('Theme'),
-              KumoSegmentedControl<ExampleThemeMode>(
-                segments: const <ExampleThemeMode, String>{
-                  ExampleThemeMode.system: 'System',
-                  ExampleThemeMode.light: 'Light',
-                  ExampleThemeMode.dark: 'Dark',
+              KumoSegmentedControl<KumoThemeMode>(
+                segments: const <KumoThemeMode, String>{
+                  KumoThemeMode.system: 'System',
+                  KumoThemeMode.light: 'Light',
+                  KumoThemeMode.dark: 'Dark',
                 },
                 selected: widget.mode,
                 onSelected: widget.onModeChanged,

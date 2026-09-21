@@ -1,7 +1,7 @@
 # Taste
 - Requires every public class, property, and method to carry `dartdoc` (`///`) comments. Confidence: 0.85
 - Forbids placeholder/stub comments (e.g. `// TODO: implement rest`); expects complete, fully compilable code rather than partial scaffolding. Confidence: 0.85
-- Prefers pulling styling dynamically from a theme provider (e.g. `KumoTheme.of(context)`) instead of inlining raw hex/color values at call sites. Confidence: 0.75
+- Prefers pulling styling dynamically from a theme provider (e.g. `KumoTheme.of(context)`) instead of inlining raw hex/color values at call sites, including text: components resolve their `TextStyle` colors from the active scheme rather than applying styles with baked-in tones. Confidence: 0.8
 - Avoids generic Material/Cupertino fallbacks; restricts imports to `package:flutter/widgets.dart` (no `material.dart` or `cupertino.dart`). Confidence: 0.8
 - Expects `flutter analyze` to run clean (zero static analysis errors) and `flutter test` to pass, across both the library and example packages, as explicit completion criteria before a task is considered done. Confidence: 0.85
 - Commits to explicit task specifications with named file locations, exact parameters (pixel sizes, hex values, API signatures), constraints, and acceptance steps. Confidence: 0.7
@@ -16,5 +16,16 @@
 - Prefers single-import ergonomics for a library: re-exports the core Flutter primitives it depends on (from `package:flutter/widgets.dart`) so a consumer can build a screen with only `import 'package:kumo_ui/kumo_ui.dart';`, while still refusing to re-export any Material/Cupertino symbols. Confidence: 0.6
 - Keeps source files organized into clean, clearly commented sections (anti-slop code cleanliness) grouped by concern (primitives, components, theming) rather than a flat dump of declarations. Confidence: 0.6
 - Releases follow conventional-commit messages with a type/scope prefix (e.g. `feat(dx): ...`), an annotated semver git tag (`git tag -a vX.Y.Z -m ...`), and pushing the branch plus tags to origin. Confidence: 0.6
-- Targets a maximum pub.dev score: full README with badges, a platform-support table, copy-pasteable usage examples and a component catalog, plus complete public dartdoc. Confidence: 0.55
+- Targets a maximum pub.dev score: full README with badges, a platform-support table, copy-pasteable usage examples and a component catalog, plus complete public dartdoc; aims for a warning-free `pub publish` that follows pub layout conventions (e.g. the singular `doc/` directory) and uses absolute `raw.githubusercontent.com` URLs for README images so they render on pub.dev. Confidence: 0.6
 - Expects user-facing documentation (README, CHANGELOG, version badges, install snippets) to be kept in sync with new features and configuration changes in the same pass, leaving no stale version numbers, repo URLs, or outdated claims behind. Confidence: 0.6
+- Expects a release to be carried end-to-end in one task: bump the version, sync the docs, commit + annotate-tag + push to GitHub, and run the real publish to pub.dev (not just a `--dry-run`). Confidence: 0.7
+- Audits a package README's feature catalog against the actual public API surface (the barrel export file) so every exported widget, enum and token is documented, instead of trusting the prose that is already there. Confidence: 0.7
+- Wants screenshots of the bundled example app embedded in the README as a visual gallery (thumbnails linking to full-size images), not just linked or omitted. Confidence: 0.55
+- Prefers additive, non-breaking API evolution: new capability ships as a minor release that keeps existing constructors, statics and consumer call sites working, deferring a type-level refactor rather than breaking it. Confidence: 0.55
+- Keeps a library unopinionated: app-level policy and state (e.g. theme-mode selection) belongs in the example or the consumer app, not in the package's public API. Confidence: 0.5
+- Expects light and dark color schemes to both be fully supported and legible, not one scheme with a mechanical token swap. Confidence: 0.55
+- Expects shipped variants (e.g. each color scheme) to be asserted by the automated test suite so a regressing variant fails the build, rather than being verified by eye. Confidence: 0.6
+- Applies anti-slop UI discipline: no gradients, glows, glassmorphism, background grids or decorative arrows; icons chosen for their meaning; specific, non-buzzword CTA labels; corner radii varied by role. Names the anti-slop skills explicitly in prompts, expecting them to be invoked/enforced rather than treated as background guidance. Confidence: 0.55
+- Prefers ergonomic, MaterialApp-style entry points: collapses mandatory composition boilerplate (theme + WidgetsApp + route builder + MediaQuery wiring) into a single convenience widget so consumers write one widget instead of a nested tree. Confidence: 0.6
+- Verifies a release externally after the fact (querying the pub.dev API for the live version, resolving the published image URLs) rather than trusting the publish command's exit status. Confidence: 0.55
+- Writes terse, loosely-punctuated prompts with `@file` references that bundle several related asks in one message, expecting the agent to decompose them. Confidence: 0.55

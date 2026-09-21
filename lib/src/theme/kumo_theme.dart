@@ -7,6 +7,21 @@ import 'kumo_typography.dart';
 export 'kumo_colors.dart';
 export 'kumo_typography.dart';
 
+/// Which scheme an app hands to its [KumoTheme].
+///
+/// Mirrors Material's `themeMode`: [system] is the default, so an app follows
+/// the platform unless it is told otherwise.
+enum KumoThemeMode {
+  /// Follow the platform setting, and repaint when it changes.
+  system,
+
+  /// Always the light scheme.
+  light,
+
+  /// Always the dark scheme.
+  dark,
+}
+
 /// Exposes [KumoColors] to a subtree of Kumo widgets.
 ///
 /// Wrap an app or a screen with [KumoTheme] to choose the color scheme; every

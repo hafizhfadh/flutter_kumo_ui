@@ -98,9 +98,13 @@ export 'package:flutter/widgets.dart'
         WidgetBuilder,
         MediaQuery,
         LayoutBuilder,
-        SafeArea,
-        WidgetsBinding,
-        WidgetsBindingObserver;
+        SafeArea;
+
+// ---------------------------------------------------------------------------
+// App entry point
+// ---------------------------------------------------------------------------
+
+export 'src/kumo_app.dart';
 
 // ---------------------------------------------------------------------------
 // Kumo components
