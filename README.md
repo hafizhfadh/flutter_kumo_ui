@@ -2,7 +2,8 @@
 
 **A mobile-first Flutter implementation of Cloudflare's Kumo UI design system, built on `package:flutter/widgets.dart` alone.**
 
-![version](https://img.shields.io/badge/version-1.0.1-F38020)
+[![pub package](https://img.shields.io/pub/v/kumo_ui.svg)](https://pub.dev/packages/kumo_ui)
+![version](https://img.shields.io/badge/version-1.0.2-F38020)
 ![platforms](https://img.shields.io/badge/platform-android_%7C_ios_%7C_macos_%7C_linux_%7C_windows-3DDC84)
 ![web](https://img.shields.io/badge/web-not_supported-critical)
 ![flutter](https://img.shields.io/badge/flutter-widgets.dart_only-02569B)
@@ -12,6 +13,16 @@ language — a near-black canvas, layered surfaces, hairline borders and a singl
 orange brand signal — without ever importing `material.dart` or
 `cupertino.dart`. Every widget is composed from `widgets.dart` primitives and
 resolves its colors from `KumoTheme.of(context)`.
+
+## Screenshots
+
+Phone captures of the bundled [`example/`](example/lib/main.dart) app, top to
+bottom. Tap an image for the full-size version.
+
+| | | |
+| --- | --- | --- |
+| [![Header, segmented control, text inputs, toggles and accordion](https://raw.githubusercontent.com/hafizhfadh/flutter_kumo_ui/main/docs/images/thumb-1.jpeg)](https://raw.githubusercontent.com/hafizhfadh/flutter_kumo_ui/main/docs/images/1.jpeg) | [![List group, expandable resource cards and the responsive split](https://raw.githubusercontent.com/hafizhfadh/flutter_kumo_ui/main/docs/images/thumb-2.jpeg)](https://raw.githubusercontent.com/hafizhfadh/flutter_kumo_ui/main/docs/images/2.jpeg) | [![Breadcrumb, tabs and status badges](https://raw.githubusercontent.com/hafizhfadh/flutter_kumo_ui/main/docs/images/thumb-3.jpeg)](https://raw.githubusercontent.com/hafizhfadh/flutter_kumo_ui/main/docs/images/3.jpeg) |
+| [![Checkbox, select, pagination and a toast banner](https://raw.githubusercontent.com/hafizhfadh/flutter_kumo_ui/main/docs/images/thumb-4.jpeg)](https://raw.githubusercontent.com/hafizhfadh/flutter_kumo_ui/main/docs/images/4.jpeg) | [![Code block with copy action and the select bottom sheet](https://raw.githubusercontent.com/hafizhfadh/flutter_kumo_ui/main/docs/images/thumb-5.jpeg)](https://raw.githubusercontent.com/hafizhfadh/flutter_kumo_ui/main/docs/images/5.jpeg) | [![Modal dialog with a nested code block](https://raw.githubusercontent.com/hafizhfadh/flutter_kumo_ui/main/docs/images/thumb-6.jpeg)](https://raw.githubusercontent.com/hafizhfadh/flutter_kumo_ui/main/docs/images/6.jpeg) |
 
 ## Platform support
 
@@ -60,7 +71,7 @@ Add the package and its icon dependency to your `pubspec.yaml`:
 dependencies:
   flutter:
     sdk: flutter
-  kumo_ui: ^1.0.1
+  kumo_ui: ^1.0.2
   phosphor_icons: ^3.0.1
 ```
 
@@ -71,11 +82,28 @@ import 'package:kumo_ui/kumo_ui.dart';
 ```
 
 That single import is enough to build a screen. `kumo_ui` re-exports the core
-Flutter primitives it is itself built from — `Widget`, `StatelessWidget`,
-`StatefulWidget`, `State`, `BuildContext`, `Column`, `Row`, `Stack`,
-`Container`, `Text`, `Color`, `WidgetsApp`, `Navigator`, `MediaQuery` and
-friends — so you do not have to add `package:flutter/widgets.dart` alongside
-it.
+Flutter primitives it is itself built from, grouped as:
+
+- **Core framework** — `Widget`, `StatelessWidget`, `StatefulWidget`, `State`,
+  `BuildContext`, `Key`, `ValueKey`, `GlobalKey`.
+- **Layout** — `Column`, `Row`, `Stack`, `Positioned`, `Expanded`, `Flexible`,
+  `Spacer`, `Container`, `SizedBox`, `Padding`, `Align`, `Center`,
+  `ConstrainedBox`, `BoxConstraints`, `Wrap`, `CrossAxisAlignment`,
+  `MainAxisSize`.
+- **Geometry, paint and insets** — `EdgeInsets`, `EdgeInsetsGeometry`,
+  `Alignment`, `BorderRadius`, `BoxDecoration`, `Border`, `BorderSide`,
+  `BoxShape`, `Color`, `ColoredBox`.
+- **Text** — `Text`, `TextStyle`, `TextEditingController`, `TextOverflow`.
+- **Scrolling** — `ListView`, `SingleChildScrollView`, `CustomScrollView`,
+  `SliverList`, `SliverGrid`.
+- **Interaction, focus and semantics** — `GestureDetector`, `MouseRegion`,
+  `Focus`, `FocusNode`, `Semantics`, `SystemMouseCursors`, `VoidCallback`,
+  `ValueChanged`.
+- **Animation** — `AnimatedContainer`, `AnimatedOpacity`, `AnimatedCrossFade`,
+  `SizeTransition`, `AnimationController`.
+- **Navigation and scaffolding** — `runApp`, `WidgetsApp`, `Navigator`,
+  `PageRouteBuilder`, `RouteSettings`, `WidgetBuilder`, `MediaQuery`,
+  `LayoutBuilder`, `SafeArea`.
 
 Two things worth knowing about those re-exports:
 
@@ -264,7 +292,9 @@ class AdaptivePanel extends StatelessWidget {
 ```
 
 `KumoResponsiveLayout` decides from its own constraints, so it also adapts
-correctly inside a sidebar or split pane.
+correctly inside a sidebar or split pane. When a widget needs the same decision
+outside a builder, the `KumoResponsiveLayout.isDesktop` helper answers it from
+the window `MediaQuery` instead.
 
 ## Component catalog
 
@@ -273,19 +303,21 @@ correctly inside a sidebar or split pane.
 - `KumoInput` — single-line text field with label, placeholder, prefix/suffix
   icons, obscured entry and inline error state.
 - `KumoSwitch` — compact on/off toggle with a 150ms eased thumb slide.
-- `KumoCheckbox` — labelled 18px checkbox that flips to the brand fill when
-  checked, with the whole row as one 48px tap target.
+- `KumoCheckbox` — labelled checkbox that flips to the brand fill when checked,
+  with the whole row as one 48px tap target. The box is `KumoCheckbox.boxSize`
+  (18px) square.
 - `KumoSelect<T>` — single-choice field that opens a popover on desktop and a
   `KumoBottomSheet` action sheet on phones.
-- `KumoSegmentedControl<T>` — horizontal segmented selector for switching
-  between sibling views.
-- `KumoButton` — brand-filled or outlined action with a 48px touch target and
-  optional Phosphor icon.
+- `KumoSegmentedControl<T>` — fully controlled horizontal segmented selector for
+  switching between sibling views.
+- `KumoButton` — action with a 48px touch target and optional Phosphor icon,
+  in a `KumoButtonVariant`: `primary` (brand fill) or `secondary` (outlined).
 
 **Navigation**
 
 - `KumoBreadcrumb` — scrollable parent-route trail with caret separators and a
-  non-interactive current page.
+  non-interactive current page. Each step is a `KumoBreadcrumbItem`; the one
+  without an `onTap` is the current page.
 - `KumoTabs` — tab bar with a 2px brand indicator under the active tab.
 - `KumoPagination` — Prev/Next switcher with a monospace `Page X of Y`
   indicator.
@@ -299,33 +331,66 @@ correctly inside a sidebar or split pane.
 - `KumoDataGrid` — adaptive card container: a vertical stack on phones, a
   bordered multi-column grid on desktop.
 - `KumoDataCard` — expandable resource card with a status chip and adaptive
-  key/value details.
+  key/value details, each detail a `KumoDataPair`.
 - `KumoResponsiveLayout` — swaps any two arrangements at a configurable
   breakpoint based on the local constraints.
 - `KumoAccordion` — collapsible section using a `SizeTransition` reveal.
-- `KumoBottomSheet` — bottom-anchored surface for touch-first choices, with
-  `KumoBottomSheetItem` rows at a full 48px tap height.
+- `KumoBottomSheet` — bottom-anchored surface pushed with
+  `KumoBottomSheet.show<T>(…)`, for touch-first choices. Its rows are
+  `KumoBottomSheetItem`s at a full 48px tap height.
 
 **Content and overlay**
 
 - `KumoCodeBlock` — monospace code surface with an optional language label and a
   clipboard copy action.
-- `KumoModal` — modal dialog built on a custom `RawDialogRoute`, with a dimmed
-  barrier and a centered card.
+- `KumoModal` — modal dialog pushed with `KumoModal.show<T>(…)` on a custom
+  `RawDialogRoute`, with a dimmed barrier and a centered card. Both `show`
+  methods resolve to a `Future<T?>` when the route pops.
 - `KumoToast` and `KumoToastManager` — stacked, auto-dismissing status banners
-  overlaid at the bottom centre for info, success, warning and error states.
+  overlaid at the bottom centre. `KumoToastManager.show(context, …)` pushes one,
+  and `dismiss(id)` / `clear()` / `activeCount` manage the stack. Auto-dismiss
+  waits `KumoToastManager.defaultDuration` (4s) by default.
 - `KumoBadge` — 11px monospace pill tag for metadata, plan types and status
-  flags, in info, success, warning, error and neutral variants.
+  flags, in a `KumoBadgeVariant`: `info`, `success`, `warning`, `error` or
+  `neutral`.
+
+**Enums**
+
+- `KumoButtonVariant` — `primary`, `secondary`.
+- `KumoBadgeVariant` — `info`, `success`, `warning`, `error`, `neutral`.
+- `KumoToastKind` — `info`, `success`, `warning`, `error`.
 
 **Theming**
 
-- `KumoTheme` — `InheritedWidget` that supplies the palette and asserts the
-  platform guardrail.
+- `KumoTheme` — `InheritedWidget` that supplies the palette. `KumoTheme.of`
+  returns the nearest ancestor's colors, falling back to `const KumoColors()`
+  when there is none, and asserts the platform guardrail on every read.
+  `KumoTheme.ensureSupportedPlatform()` performs that check once at startup.
 - `KumoPalette` — the raw scale: a ten-step `gray0`–`gray9` ramp plus
   `orange5`, `blue5`, `red5`, `green5` and `amber5` accents.
 - `KumoColors` — the semantic layer. Every token resolves to a `KumoPalette`
-  step: canvas, surface, subtle surface, border, brand accent, focus ring, four
-  text tones and info/success/warning/error status colors.
+  step:
+
+  | Token | Default | Role |
+  | --- | --- | --- |
+  | `canvas` | `gray0` `#111111` | Page background |
+  | `surface` | `gray1` `#1D1D1D` | Default raised surface |
+  | `subtleSurface` | `gray2` `#262626` | Recessed fill (inputs, toggles, badges) |
+  | `border` | `gray3` `#333333` | Hairline dividers and outlines |
+  | `primary` | `orange5` `#F38020` | Brand signal and active fill |
+  | `focus` | `#E9E9E9` | Focus ring |
+  | `textPrimary` | `gray9` `#EDEDED` | High-emphasis text |
+  | `textSecondary` | `gray6` `#A1A1AA` | Labels, hints, placeholders |
+  | `textMuted` | `gray5` `#8D8D99` | Lowest-emphasis AA text |
+  | `info` | `blue5` `#0EA5E9` | Info status |
+  | `success` | `green5` `#34D399` | Success status |
+  | `warning` | `amber5` `#F59E0B` | Warning status |
+  | `danger` | `red5` `#EF4444` | Destructive **indicator** only |
+  | `dangerText` | `#F87171` | Destructive **text** (contrast-safe) |
+
+  Keep `danger` for fills, icons and borders; use `dangerText` whenever the red
+  is the text itself, because `danger` does not clear 4.5:1 on the dark
+  surfaces.
 - `KumoTypography` — `h1`, `h2`, `body`, `bodyMuted`, `caption` and `code`
   text styles.
 - `kKumoBreakpoint` — the shared 600px mobile/desktop switchover point.
@@ -333,8 +398,10 @@ correctly inside a sidebar or split pane.
 ## Example
 
 A runnable showcase lives in [`example/`](example/lib/main.dart). It exercises
-every component at both a phone and a desktop viewport, and imports only
-`package:kumo_ui/kumo_ui.dart` plus the Phosphor glyph constants:
+every component at a phone and a desktop viewport and imports only
+`package:kumo_ui/kumo_ui.dart` plus the Phosphor glyph constants. The select
+example is also what surfaces `KumoBottomSheet` on phones, since that is where
+`KumoSelect` renders its action sheet.
 
 ```sh
 cd example
@@ -345,15 +412,15 @@ flutter run
 
 - Contributions, bug reports and feature requests are welcome via the
   [issue tracker](https://github.com/hafizhfadh/flutter_kumo_ui/issues).
+- The package page, changelog and API docs live on
+  [pub.dev](https://pub.dev/packages/kumo_ui).
 - `kumo_ui` follows semantic versioning from 1.0.0: additive API ships in minor
   releases, and fixes or internal changes ship in patches. See
   [CHANGELOG.md](CHANGELOG.md) for the detail of each release.
-- `kumo_ui` is an independent, community implementation of a visual language. It
-  is not affiliated with, endorsed by, or published by Cloudflare, Inc.
 
 ## Disclaimer & Trademark Notice
 
-`kumo_ui` is an independent, community-driven Flutter package inspired by Cloudflare's Kumo UI design system. 
+`kumo_ui` is an independent, community-driven Flutter package inspired by Cloudflare's Kumo UI design system.
 
 - **Independent Project:** This package is **NOT** affiliated, endorsed, sponsored, or maintained by Cloudflare, Inc.
 - **Trademarks:** "Cloudflare", "Kumo", and "Kumo UI" are registered trademarks of Cloudflare, Inc.

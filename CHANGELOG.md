@@ -1,3 +1,15 @@
+## 1.0.2
+
+Documentation and packaging release.
+
+- README now documents every public widget, enum and theming token, adding
+  `KumoListItem`, `KumoBreadcrumbItem`, `KumoDataPair`, `KumoBottomSheetItem`,
+  the `KumoButtonVariant` / `KumoBadgeVariant` / `KumoToastKind` enums, and the
+  `KumoToastManager` / `KumoResponsiveLayout.isDesktop` helpers.
+- Adds a screenshots gallery backed by the new `docs/images/` phone captures
+  of the bundled example app.
+- No public API changes; `1.0.2` is a drop-in replacement for `1.0.1`.
+
 ## 1.0.1
 
 Developer-experience release.
