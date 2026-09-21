@@ -111,9 +111,11 @@ token from `KumoTheme.of(context)`; it never writes a raw `Color(0x...)`.
 ```
 lib/kumo_ui.dart          public barrel: curated widgets.dart re-export + every component
 lib/src/kumo_app.dart     KumoApp and KumoApp.router
-lib/src/components/       the 35 widgets
-lib/src/charts/           chart subsystem: the layer contract and palette at the
-                          root, then timeseries/, sankey/ and map/ per family
+lib/src/components/       the 32 public component widgets (one file each, plus
+                          KumoFocusable, the wrapper they are all built from)
+lib/src/charts/           chart subsystem: the layer contract, the palette and
+                          KumoCanvas at the root, then timeseries/, sankey/ and
+                          map/ per family
 lib/src/layout/           kKumoBreakpoint, KumoResponsiveLayout
 lib/src/theme/            KumoPalette, KumoLightPalette, KumoColors, KumoTheme, KumoTypography
 example/                  runnable gallery, routed with go_router, single-import
