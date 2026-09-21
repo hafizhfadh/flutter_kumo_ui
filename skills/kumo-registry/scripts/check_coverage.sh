@@ -66,7 +66,7 @@ Popover|MISSING
 Radio|KumoRadio
 Select|KumoSelect
 Sensitive Input|KumoSensitiveInput
-Sidebar|MISSING
+Sidebar|KumoDrawerScaffold
 Skeleton Line|KumoSkeleton
 Switch|KumoSwitch
 Table|KumoDataGrid

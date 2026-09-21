@@ -1,6 +1,6 @@
 name: kumo_ui
 description: A mobile-first Flutter implementation of Cloudflare's Kumo UI design system, built using pure widgets.dart.
-version: 1.5.0
+version: 1.6.0
 homepage: https://github.com/hafizhfadh/flutter_kumo_ui
 repository: https://github.com/hafizhfadh/flutter_kumo_ui
 issue_tracker: https://github.com/hafizhfadh/flutter_kumo_ui/issues

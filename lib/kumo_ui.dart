@@ -129,6 +129,8 @@ export 'src/components/kumo_checkbox.dart';
 export 'src/components/kumo_code_block.dart';
 export 'src/components/kumo_data_card.dart';
 export 'src/components/kumo_data_grid.dart';
+export 'src/components/kumo_drawer.dart';
+export 'src/components/kumo_drawer_scaffold.dart';
 export 'src/components/kumo_empty.dart';
 export 'src/components/kumo_header.dart';
 export 'src/components/kumo_input.dart';

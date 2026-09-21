@@ -1,3 +1,25 @@
+## 1.6.0
+
+`KumoDrawerScaffold`, covering upstream's `Sidebar`. Coverage moves to 26 of 45.
+
+- Upstream Kumo's sidebar is one adaptive component: an `aside` rail on a wide
+  viewport and a navigation drawer below `mobileBreakpoint`. `KumoDrawerScaffold`
+  is the same idea in Flutter. Above `kKumoBreakpoint` the drawer is docked
+  beside the page and cannot be dismissed, because there is room for it. Below
+  it the drawer is hidden until `open`, then slides over a `scrim` that
+  dismisses on tap, with Escape-to-close and focus moved inside.
+- `KumoDrawer` is the panel: an optional pinned header and footer around a
+  scrollable nav area, and an icon-only collapsed rail (`isCollapsed`).
+- `KumoDrawerItem` keeps the package's 48px tap height, insets the selected fill
+  into a pill, and carries `Semantics(selected:)` so the current destination is
+  announced rather than only painted. `KumoDrawerGroup` labels a run of items.
+- `KumoDrawerScaffold.isDocked(context)` lets a page decide whether to render a
+  menu affordance at all, so a desktop build does not show a button that does
+  nothing.
+- Not ported from upstream: collapsible sub-menus, drag-to-resize, peeking,
+  sliding views, and the full-screen-on-mobile sheet is opt-in via
+  `fullScreenOnMobile` rather than automatic.
+
 ## 1.5.0
 
 Four more upstream components, moving coverage to 25 of 45.

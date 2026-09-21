@@ -3,7 +3,7 @@
 **A mobile-first Flutter implementation of Cloudflare's Kumo UI design system, built on `package:flutter/widgets.dart` alone.**
 
 [![pub package](https://img.shields.io/pub/v/kumo_ui.svg)](https://pub.dev/packages/kumo_ui)
-![version](https://img.shields.io/badge/version-1.5.0-F38020)
+![version](https://img.shields.io/badge/version-1.6.0-F38020)
 ![platforms](https://img.shields.io/badge/platform-android_%7C_ios_%7C_macos_%7C_linux_%7C_windows-3DDC84)
 ![web](https://img.shields.io/badge/web-not_supported-critical)
 ![flutter](https://img.shields.io/badge/flutter-widgets.dart_only-02569B)
@@ -71,7 +71,7 @@ Add the package and its icon dependency to your `pubspec.yaml`:
 dependencies:
   flutter:
     sdk: flutter
-  kumo_ui: ^1.5.0
+  kumo_ui: ^1.6.0
   phosphor_icons: ^3.0.1
 ```
 
@@ -527,7 +527,7 @@ ships a Flutter equivalent; `[ ]` means it does not yet. The same list, with a
 drift check, lives in
 [`skills/kumo-registry/`](skills/kumo-registry/references/coverage.md).
 
-**Implemented — 25 of 45**
+**Implemented — 26 of 45**
 
 - [x] Badge — `KumoBadge`
 - [x] Banner — `KumoBanner`
@@ -548,6 +548,7 @@ drift check, lives in
 - [x] Radio — `KumoRadio`
 - [x] Select — `KumoSelect`
 - [x] Sensitive Input — `KumoSensitiveInput`
+- [x] Sidebar — `KumoDrawerScaffold`
 - [x] Skeleton Line — `KumoSkeleton`
 - [x] Switch — `KumoSwitch`
 - [x] Tabs — `KumoTabs`
@@ -565,7 +566,7 @@ of its own:
 - [x] Layer Card — `KumoDataCard` is a resource card, not a general layer
 - [x] Table — `KumoDataGrid` lays out cards, not a true data table
 
-**Not implemented — 13**
+**Not implemented — 12**
 
 - [ ] Autocomplete
 - [ ] Button Group
@@ -576,7 +577,6 @@ of its own:
 - [ ] InputGroup
 - [ ] Layer Dialog
 - [ ] Popover
-- [ ] Sidebar
 - [ ] Table of Contents
 - [ ] Tag Input
 - [ ] Toolbar

@@ -394,6 +394,53 @@ The screen shell. Fills the space it is given, so use it at the root of a route.
 | `safeArea` | `bool` | `true` |
 | `resizeToAvoidBottomInset` | `bool` | `true` |
 
+### `KumoDrawerScaffold`
+
+Places a `KumoDrawer` adaptively: docked rail at or above `breakpoint`, drawer
+sheet below it.
+
+| Param | Type | Default |
+| --- | --- | --- |
+| `child` | `Widget` | required |
+| `drawer` | `Widget` | required (normally a `KumoDrawer`) |
+| `breakpoint` | `double` | `kKumoBreakpoint` |
+| `fullScreenOnMobile` | `bool` | `false` |
+
+Statics: `open(context)`, `close(context)`, `isDocked(context)`. Use `isDocked`
+to decide whether to render a menu affordance at all. Below the breakpoint the
+sheet closes on a scrim tap and on Escape, and focus moves inside while open.
+
+### `KumoDrawer`
+
+| Param | Type | Default |
+| --- | --- | --- |
+| `children` | `List<Widget>` | required (usually `KumoDrawerGroup`s) |
+| `header` | `Widget?` | `null` (pinned) |
+| `footer` | `Widget?` | `null` (pinned) |
+| `isCollapsed` | `bool` | `false` (icon-only rail) |
+
+Preferred widths: `kKumoDrawerWidth` (240) and `kKumoDrawerCollapsedWidth` (68).
+
+### `KumoDrawerItem`
+
+| Param | Type | Default |
+| --- | --- | --- |
+| `label` | `String` | required |
+| `icon` | `PhosphorIconData?` | `null` |
+| `isSelected` | `bool` | `false` |
+| `onTap` | `VoidCallback?` | `null` |
+| `trailing` | `Widget?` | `null` |
+| `isSubItem` | `bool` | `false` (indents) |
+| `isCollapsed` | `bool` | `false` |
+
+### `KumoDrawerGroup`
+
+| Param | Type | Default |
+| --- | --- | --- |
+| `children` | `List<Widget>` | required |
+| `label` | `String?` | `null` (uppercase micro label) |
+| `isCollapsed` | `bool` | `false` |
+
 ---
 
 ## Feedback and primitives
